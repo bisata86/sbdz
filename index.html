@@ -41,7 +41,7 @@
           background-color: black;
           border: none;
           color: white;
-          padding: 15px 12px;
+          padding: 5px 5px;
           text-align: center;
           text-decoration: none;
           display: inline-block;
@@ -49,9 +49,12 @@
           margin-top: 10px;
           cursor: pointer;
           width: 100%;
-          border-radius: 10px;
+          border-radius: 5px;
           box-sizing: border-box;
       }
+      /*.gamelist .button {
+          width: initial;
+      }*/
       ::-webkit-scrollbar {
       display: none;
     }
@@ -174,12 +177,16 @@
 
             Vue.component('gamelist-item', {
               props: ['all'],
-              template: '<div class="gamelist"><div v-if="item.status==\'pending\'" v-for="item in all.games" @click="join(item)">{{item.id}} {{item.players.length}}</div><div class="button" @click="newGame">NEW GAME</div></div>',
+              template: '<div class="gamelist"><div v-if="item.status==\'pending\'" v-for="item in all.games" >{{item.id}} -Players {{item.players.length}} <div @click="join(item)" class="button" style="width:initial;">JOIN</div></div><div class="button" @click="newGame">NEW GAME</div><div class="button" @click="settings">SETTINGS</div></div>',
               
               methods: {
                   newGame: function () {
                     //app.dataObj.status = 'waitingforplayers'
                     socket.emit('newgame',{name:app.dataObj.name})
+                  },
+                  settings: function () {
+                    app.dataObj.status = 'settings'
+                    //socket.emit('newgame',{name:app.dataObj.name})
                   },
                   join: function (a) {
                     //app.dataObj.status = 'waitingforplayers'
@@ -421,15 +428,12 @@
               methods: {
                   settingsDone:function(){
                     if(!app.dataObj.name) app.dataObj.name = '#'+Math.floor((Math.random()*1000)+1)
-                    localStorage.setItem('bscname',app.dataObj.name)
-                    localStorage.setItem('bscsecret',app.dataObj.secret)
-                    this.dataObj.status = 'chatting'
+                    localStorage.setItem('sbdzname',app.dataObj.name)
+                    this.dataObj.status = 'ready'
                     this.scrollToBottom();
                   },
                   clearAll:function(){
-                    localStorage.removeItem('bscname')
-                    localStorage.removeItem('bscsecret')
-                    socket.emit('clear')
+                    localStorage.removeItem('sbdzname')
                     window.location.reload();
                   },
                   scrollToBottom:function(){
@@ -504,11 +508,8 @@
             <gameplay-item  v-bind:all="dataObj.current" v-bind:sid="dataObj.socketid"></gameplay-item>
          </div>
          <div class="settings" v-if="dataObj.status=='settings'">
-            <div>Online users -  {{dataObj.countUsers}}</div>
             <div class="label">Name</div>
             <input  v-model="dataObj.name"></input>
-            <div  class="label">Encryption key</div>
-            <input placeholder="None"  v-model="dataObj.secret"></input>
             <div  @click="settingsDone" class="button">OK</div>
             <div  @click="clearAll" class="button">CLEAR ALL</div>
          </div>

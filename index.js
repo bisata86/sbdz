@@ -148,7 +148,7 @@ io.on('connection', (socket) => {
       socket.emit('listgames',games);
   });
   socket.on('newgame', function (data) {
-      var g = {id:socket.id,players:[{id:socket.id,name:data.name,ready:false,cards:[],
+      var g = {id:data.name+'_game',players:[{id:socket.id,name:data.name,ready:false,cards:[],
           tablecards:[],hp:50,
           atk:0}],status:'pending'}
       games.push(g)
