@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html>
+   <head>
+     <!--  <link rel="icon" href="./imgs/logo.png" type="image/x-icon"/>
+      <link rel="shortcut icon" href="./imgs/logo.png" type="image/x-icon"/> -->
+      <title>SBDZ</title>
+   </head>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.3/socket.io.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+   <style type="text/css">
+      body {
+        padding: 0;
+        margin: 0;
+        border: 0;
+      }
+      .mine {
+        background: lightgreen;
+        border-radius: 10px 10px 0px 10px;
+        float: right;
+      }
+      .clearfix {
+        clear: both;
+      }
+      .settings {
+        padding: 10px;
+      }
+      .settings input {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            border: 0;
+            background: lightgray;
+            height: 30px;
+            text-indent: 5px;
+            outline-width: 0;
+      }
+      .button {
+          background-color: black;
+          border: none;
+          color: white;
+          padding: 15px 12px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin-top: 10px;
+          cursor: pointer;
+          width: 100%;
+          border-radius: 10px;
+          box-sizing: border-box;
+      }
+      ::-webkit-scrollbar {
+      display: none;
+    }
+    .card {
+      width: 50px;
+      height: 87px;
+      background: white;
+      display: inline-block;
+      font-size: xx-small;
+      vertical-align: bottom;
+      overflow: hidden;
+      border: 1px solid black;
+          margin: 0 1px;
+    }
+    .handCards {
+      position: absolute;
+      bottom: 10px;
+      right: 0;
+      left: 0;
+      margin: auto;
+      width: max-content;
+    }
+    .tableCards {
+        position: absolute;
+        top: 10px;
+        right: 0;
+        left: 0;
+        margin: auto;
+        width: max-content;
+    }
+    .myField {
+        position: absolute;
+        width: 100%;
+        height: 60vh;
+        bottom: 0;
+    }
+    .enemyField {
+        position: absolute;
+        width: 100%;
+        height: 40vh;
+        top: 0;
+    }
+    .enemyField .handCards .card {
+      width: 25px;
+      height: 43px;
+    }
+    .enemyField .handCards {
+      top:10px;
+      bottom: initial;
+    }
+    .enemyField .tableCards {
+      bottom:0px;
+      top: initial;
+    }
+    .playerLayout[layout='3'] .enemyField {
+      width: 50%;
+    }
+    .playerLayout[layout='3'] .enemyField:nth-child(odd) {
+      width: 50%;
+      right: 0;
+    }
+    .label {
+      font-size: xx-small;
+      position: relative;
+      top: 5px;
+      background: lightgray;
+      width: max-content;
+      padding: 2px 10px 0 10px;
+    }
+    .deck {
+      position: absolute;
+      width: 87px;
+      height: 50px;
+      background: white;
+      border:1px solid black;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      right: 10px;
+      z-index: 10;
+    }
+    .cardMenu {
+      z-index: 100;
+      background: gray;
+      position: absolute;
+      bottom:0px;
+    }
+    .overlay {
+      background: rgba(0,0,0,.5);
+      height: 100vh;
+      width: 100vw;
+      position: absolute;
+      z-index: 11;
+    }
+    .attack {
+      background: white;
+      height: 200px;
+      width: 300px;
+      position: absolute;
+      top:0;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      margin: auto;
+    }
+    .atkInput {
+      display: inline-block;
+      width: 50px;
+    }
+
+   </style>
+   <script>
+         var current = 'https://sbc.onrender.com/';
+        if (window.location.href.indexOf('localhost') != -1) {
+            current = '//localhost:3000';
+        }
+        var socket = io.connect(current);
+        var app;
+        window.onload = function () {
+
+            Vue.component('gamelist-item', {
+              props: ['all'],
+              template: '<div class="gamelist"><div v-for="item in all.games" @click="join(item)">{{item.id}}-{{item.players.length}}</div><div @click="newGame">N</div></div>',
+              
+              methods: {
+                  newGame: function () {
+                    //app.dataObj.status = 'waitingforplayers'
+                    socket.emit('newgame',{name:app.dataObj.name})
+                  },
+                  join: function (a) {
+                    //app.dataObj.status = 'waitingforplayers'
+                    a.name = app.dataObj.name
+                    socket.emit('join',a)
+                  },
+                  
+                }
+            })
+            Vue.component('gamesetup-item', {
+              props: ['all','sid'],
+              template: '<div class="gamelist">'+
+                          //'{{all}}'+
+                          '<div v-for="item in all.players">'+
+                            '{{item.name}} {{item.ready}}'+
+                            '<div v-if="sid==item.id"><input type="checkbox" id="smlnd" @change="smildone(item)"></input><label for="smlnd">ready</label></div>'+
+                          '</div>'+
+                        '</div>',
+              methods: {
+                  smildone: function (item) {
+                    console.log(item)
+                    item.changeReady = true
+                    socket.emit('updategame',item)
+                  },
+                  join: function (a) {
+                    //app.dataObj.status = 'waitingforplayers'
+                    a.name = app.dataObj.name
+                    socket.emit('join',a)
+                  },
+                  
+                }
+            })
+            Vue.component('attack-item', {
+              props: ['all','sid'],
+              template: '<div class="overlay">'+
+                          '<div class="attack">'+
+                            '<div v-for="(player, index) in all.players" v-if="player.id==all.attack.from">'+
+                              '<div>Attacker {{player.name}}</div>'+
+                              '<div>Attack amount {{all.attack.amount-all.attack.amounttemp-all.attack.amounttempdefenders}} -{{all.attack.amounttemp}}--{{all.attack.amounttempdefenders}}-</div>'+
+                            '</div>'+
+                            '<div v-for="(player, index) in all.players" v-if="player.id==all.attack.to">'+
+                              '<div>Defender {{player.name}}</div>'+
+                              '<div><label for="lifes">Life</label> <input type="number" class="atkInput" id="lifes" :max="player.hp" @change="handleChange(all.attack,player,$event)" :value="player.hp-all.attack.amounttemp"></input></div>'+
+                                '<div v-for="c in player.tablecards">'+
+                                 '{{c.name}}<input type="number" class="atkInput" :max="c.hp" @change="handleChangeDef(all,c,$event)" :value="c.hp-(c.amounttemp || 0)"></input>'+
+                                '</div>'+
+                            '</div>'+
+                            '<div class="button" @click="handleAttack(all)">OK</div>'+
+                          '</div>'+
+                        '</div>',
+              methods: {
+                  handleAttack: function (a) {
+                    socket.emit('handleattack',a)
+                  },
+                  handleChange: function (a,player,event) {
+                    console.log(a,event)
+                    a.amounttemp = player.hp-event.target.value
+                    /*var total = player.hp
+                    player.hpremoved = total-event.target.value
+                    a.amounttemp = 12*/
+                    //player.hp = event.target.value
+                    //event.preventDefault()
+                  },
+                  handleChangeDef: function (a,card,event) {
+                    card.amounttemp = card.hp-event.target.value
+                    var totto = 0;
+                    for (var i = a.players.length - 1; i >= 0; i--) {
+                      if(a.players[i].id==a.attack.to) {
+                        for (var  m= 0; m < a.players[i].tablecards.length; m++) {
+                          totto+=(a.players[i].tablecards[m].amounttemp || 0)
+                        }
+                      }
+                    }
+                    a.attack.amounttempdefenders = totto
+
+                    //a.amounttemp += card.amounttemp
+                    /*var total = player.hp
+                    player.hpremoved = total-event.target.value
+                    a.amounttemp = 12*/
+                    //player.hp = event.target.value
+                    //event.preventDefault()
+                  }
+                  
+                }
+            })
+            Vue.component('gameplay-item', {
+              props: ['all','sid'],
+              template: '<div class="playerLayout" :layout="all.players.length">'+
+                          
+                          '<div class="deck" @click="getCard"></div>'+
+                          '<div :class="{myField : item.id==sid, enemyField : item.id!=sid}" v-for="(item, index) in all.players">'+
+                            '<div class="">'+
+                              '<div>{{item.name}}- {{index==all.turn}}</div>'+
+                              '<div>hp {{item.hp}}</div>'+
+                              '<div>atk {{item.atk}}</div>'+
+                              '<div>Moves {{item.moves}}</div>'+
+                              '<div calss="button" v-if="index==all.turn && item.id==sid"  @click="endTurn">END TURN</div>'+
+                              //'<div calss="button" v-if="all.players[all.turn].id == sid && item.id!=sid"  @click="attack(item)">ATTACK</div>'+
+                              '<div calss="button" @click="attack(item)">ATTACK</div>'+
+                              '<div class="tableCards">'+
+                                '<div class="card" v-for="card in item.tablecards">'+
+                                  '<div @click="actionTable(card,item.cards)">'+
+                                    '<div>{{card.name}}</div>'+
+                                    '<div>HP {{card.hp}}</div>'+
+                                  '</div>'+
+                                  '<div class="cardMenu">'+
+                                    '<div class=""  v-for="menuitem in card.menu">'+
+                                      '<div  @click="menuitem.onclick(card)">{{menuitem.text}}</div>'+
+                                    '</div>'+
+                                  '</div>'+
+                                '</div>'+
+                              '</div>'+
+                              '<div class="handCards">'+
+                                '<div class="card"  v-for="card in item.cards">'+
+                                  '<div @click="actionHand(card,item.cards)">'+
+                                    '<div>{{card.name}}</div>'+
+                                    '<div>HP {{card.hp}}</div>'+
+                                    '<div>ATK {{card.atk}}</div>'+
+                                    '<div>DEF {{card.def}}</div>'+
+                                  '</div>'+
+                                  '<div class="cardMenu">'+
+                                    '<div class=""  v-for="menuitem in card.menu">'+
+                                      '<div  @click="menuitem.onclick(card)">{{menuitem.text}}</div>'+
+                                    '</div>'+
+                                  '</div>'+
+                                '</div>'+
+                              '</div>'+
+                            '</div>'+
+                          '</div>'+
+                           '<div v-if="all.attack"><attack-item v-bind:all="all" v-bind:sid="sid"></attack-item></div>'+
+                        '</div>',
+              methods: {
+                  actionHand: function (item,cards) {
+                      
+                      for (var i = cards.length - 1; i >= 0; i--) {
+                        cards[i].menu = []
+                      }
+
+                      item.menu = [
+                      {
+                        onclick:function(){
+                          item.menu = []
+                          socket.emit('action',{card:item,action:'totable'})
+                        },
+                        text:'Play card'
+                      },{
+                        onclick:function(){
+                          alert('todo')
+                        },
+                        text:'Zoom'
+                      },{
+                        onclick:function(item){
+                          item.menu = []
+                        },
+                        text:'Close'
+                      }
+                    ]
+                    
+                  },
+                  actionTable: function (item,cards) {
+                      
+                      for (var i = cards.length - 1; i >= 0; i--) {
+                        cards[i].menu = []
+                      }
+
+                      item.menu = [
+                      {
+                        onclick:function(){
+                          item.menu = []
+                          socket.emit('action',{card:item,action:'tohand'})
+                        },
+                        text:'Retire card'
+                      },
+                      {
+                        onclick:function(){
+                          alert('todo')
+                        },
+                        text:'Zoom'
+                      },{
+                        onclick:function(item){
+                          item.menu = []
+                        },
+                        text:'Close'
+                      }
+                    ]
+                    
+                  },
+                  getCard: function () {
+                    socket.emit('getcard')
+                  },
+                  endTurn: function () {
+                    socket.emit('endturn')
+                  },
+                  attack: function (item) {
+                    socket.emit('attack',item)
+                  },
+                  
+                }
+            })
+            app = new Vue({
+              el: '#app',
+              data: {
+                dataObj : {
+                  socketid:null,
+                  name : "",
+                  secret: "",
+                  currText: "",
+                  messages : [],
+                  menuItems: [],
+                  status:'init',
+                  canvasUrl: '',
+                  countUsers:0,
+                  games:[],
+                  current:{}
+                }
+              },
+              created () {
+                this.dataObj.status = 'ready'
+                
+                var ret = localStorage.getItem('sbdzname')
+                if(ret) {
+                  this.dataObj.name = ret
+                } else {
+                  this.dataObj.name = '#'+Math.floor((Math.random()*1000)+1)
+                }
+                document.getElementById('app').style.display = "block"
+                socket.emit('ready')
+                window.addEventListener("resize", this.scrollToBottom);
+                
+              },
+              methods: {
+                  settingsDone:function(){
+                    if(!app.dataObj.name) app.dataObj.name = '#'+Math.floor((Math.random()*1000)+1)
+                    localStorage.setItem('bscname',app.dataObj.name)
+                    localStorage.setItem('bscsecret',app.dataObj.secret)
+                    this.dataObj.status = 'chatting'
+                    this.scrollToBottom();
+                  },
+                  clearAll:function(){
+                    localStorage.removeItem('bscname')
+                    localStorage.removeItem('bscsecret')
+                    socket.emit('clear')
+                    window.location.reload();
+                  },
+                  scrollToBottom:function(){
+                    setTimeout(function(){
+                       document.getElementById("messages").scrollTop = document.getElementById("messagess").offsetHeight;
+                    },10) 
+                  },
+                  sendImage:function(a){
+                    // console.log(a)
+                    // const canvas = document.getElementById("canvas");
+                    // const ctx = canvas.getContext("2d");
+                    // ctx.drawImage(a, 0, 0);
+                    canvas  = document.getElementById("canvas");
+                    context = canvas.getContext('2d');
+
+                    img = new Image();
+                    img.src = a;
+                    img.onload = function (e)
+                    {
+                        var perc = img.width/img.height
+                        canvas.width = 200
+                        canvas.height = canvas.width/perc
+                        context.drawImage(img, 0, 0,canvas.width,canvas.height);
+                        socket.emit('send',{
+                          text:CryptoJS.AES.encrypt(canvas.toDataURL(), app.dataObj.secret).toString(),
+                          author:CryptoJS.AES.encrypt(app.dataObj.name, app.dataObj.secret).toString()
+                        })
+                        
+                    }
+                  }
+                }
+            }) 
+
+            socket.on('console', function(data){
+                console.log(data)
+            });
+            socket.on('listgames', function(data){
+                app.dataObj.socketid = socket.id;
+                app.dataObj.games = data
+            });
+            socket.on('status', function(data){
+                app.dataObj.status = data
+            });
+            socket.on('message', function(data){
+                console.log(data)
+            });
+            socket.on('updategame', function(data){
+                console.log(data)
+                app.dataObj.current = data
+            });
+            socket.on('attack', function(data){
+                console.log(data)
+            });
+            socket.on('startgame', function(data){
+                console.log('startgame')
+                setTimeout(function(){
+                    app.dataObj.status = 'game'
+                },1000)
+            });
+        }
+   </script>
+
+   <body>
+      <div id="app" style="display:none;">
+        <div v-if="dataObj.status=='ready'">
+          <gamelist-item  v-bind:all="dataObj"></gamelist-item>
+        </div>
+         <div v-if="dataObj.status=='gamesetup'">
+            <gamesetup-item  v-bind:all="dataObj.current" v-bind:sid="dataObj.socketid"></gamesetup-item>
+         </div>
+         <div v-if="dataObj.status=='game'">
+            <gameplay-item  v-bind:all="dataObj.current" v-bind:sid="dataObj.socketid"></gameplay-item>
+         </div>
+         <div class="settings" v-if="dataObj.status=='settings'">
+            <div>Online users -  {{dataObj.countUsers}}</div>
+            <div class="label">Name</div>
+            <input  v-model="dataObj.name"></input>
+            <div  class="label">Encryption key</div>
+            <input placeholder="None"  v-model="dataObj.secret"></input>
+            <div  @click="settingsDone" class="button">OK</div>
+            <div  @click="clearAll" class="button">CLEAR ALL</div>
+         </div>
+         <div v-if="dataObj.status=='chatting'">
+           <div class="messages" id="messages">
+             <messages-item  v-bind:all="dataObj"></messages-item>
+           </div>
+           <bar-item v-bind:all="dataObj"></bar-item>
+         </div>
+      </div>
+   </body>
+</html>
