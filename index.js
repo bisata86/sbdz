@@ -188,6 +188,7 @@ io.on('connection', (socket) => {
           io.to(g.game.players[i].id).emit('updategame',g.game)
         }
       }
+      io.emit('listgames',games);
   });
   socket.on('updategame', function (data) {
       var g = findGameByPlayer(data.id)
@@ -195,10 +196,10 @@ io.on('connection', (socket) => {
         var allready = true;
         for (var i = 0; i < g.game.players.length; i++) {
           if(socket.id==g.game.players[i].id && data.changeReady) g.game.players[i].ready=!g.game.players[i].ready 
-          io.to(g.game.players[i].id).emit('updategame',g.game)
           if(g.game.players[i].ready==false) allready = false
         }
         if(allready) {
+          g.game.status = 'game'
           g.game.turn = 0;
           g.game.cards = JSON.parse(JSON.stringify(cards))
           g.game.cards.sort(() => Math.random() - 0.5)
@@ -220,34 +221,58 @@ io.on('connection', (socket) => {
           }
 
 
-        for (var i = 0; i < g.game.players.length; i++) {
-          if(true) {
-            g.game.players[i].tempcards = JSON.parse(JSON.stringify(g.game.players[i].cards))
+          for (var i = 0; i < g.game.players.length; i++) {
+            if(true) {
+              g.game.players[i].tempcards = JSON.parse(JSON.stringify(g.game.players[i].cards))
+              for (var v = g.game.players[i].cards.length - 1; v >= 0; v--) {
+                g.game.players[i].cards[v].name = ''
+                g.game.players[i].cards[v].hp = ''
+                g.game.players[i].cards[v].atk = ''
+              }
+            }
+          }
+          for (var i = 0; i < g.game.players.length; i++) { 
+            g.game.players[i].cards = JSON.parse(JSON.stringify(g.game.players[i].tempcards))
+            io.to(g.game.players[i].id).emit('updategame',g.game)
+            io.to(g.game.players[i].id).emit('status','game')
             for (var v = g.game.players[i].cards.length - 1; v >= 0; v--) {
               g.game.players[i].cards[v].name = ''
               g.game.players[i].cards[v].hp = ''
               g.game.players[i].cards[v].atk = ''
             }
           }
-        }
-        for (var i = 0; i < g.game.players.length; i++) { 
-          g.game.players[i].cards = JSON.parse(JSON.stringify(g.game.players[i].tempcards))
-          io.to(g.game.players[i].id).emit('updategame',g.game)
-          io.to(g.game.players[i].id).emit('status','game')
-          for (var v = g.game.players[i].cards.length - 1; v >= 0; v--) {
-            g.game.players[i].cards[v].name = ''
-            g.game.players[i].cards[v].hp = ''
-            g.game.players[i].cards[v].atk = ''
+          for (var i = 0; i < g.game.players.length; i++) {
+            g.game.players[i].cards = JSON.parse(JSON.stringify(g.game.players[i].tempcards))
+            delete g.game.players[i].tempcards
           }
-        }
-        for (var i = 0; i < g.game.players.length; i++) {
-          g.game.players[i].cards = JSON.parse(JSON.stringify(g.game.players[i].tempcards))
-          delete g.game.players[i].tempcards
-        }
 
         } else {
-
+          for (var i = 0; i < g.game.players.length; i++) {
+            if(true) {
+              g.game.players[i].tempcards = JSON.parse(JSON.stringify(g.game.players[i].cards))
+              for (var v = g.game.players[i].cards.length - 1; v >= 0; v--) {
+                g.game.players[i].cards[v].name = ''
+                g.game.players[i].cards[v].hp = ''
+                g.game.players[i].cards[v].atk = ''
+              }
+            }
+          }
+          for (var i = 0; i < g.game.players.length; i++) { 
+            g.game.players[i].cards = JSON.parse(JSON.stringify(g.game.players[i].tempcards))
+            io.to(g.game.players[i].id).emit('updategame',g.game)
+            for (var v = g.game.players[i].cards.length - 1; v >= 0; v--) {
+              g.game.players[i].cards[v].name = ''
+              g.game.players[i].cards[v].hp = ''
+              g.game.players[i].cards[v].atk = ''
+            }
+          }
+          for (var i = 0; i < g.game.players.length; i++) {
+            g.game.players[i].cards = JSON.parse(JSON.stringify(g.game.players[i].tempcards))
+            delete g.game.players[i].tempcards
+          }
         }
+
+        io.emit('listgames',games);
 
       }
   });
@@ -494,13 +519,21 @@ io.on('connection', (socket) => {
 
       var g = findGameByPlayer(socket.id)
       if(g) {
+        var index;
         for (var i = 0; i < g.game.players.length; i++) {
+          if(g.game.players[i].id==socket.id) index = i
           io.to(g.game.players[i].id).emit('console','qualcuno si è disconnesso')
         }
+        g.game.players.splice(index,1)
+        if(g.game.players.length==0) {
+          g.game.status = 'canceled'
+        }
+        for (var i = 0; i < g.game.players.length; i++) {
+          io.to(g.game.players[i].id).emit('updategame',g.game)
+        }
+        io.emit('listgames',games);
       }
 
-      //games.splice(users.indexOf(socket.id), 1); 
-      io.emit('countUsers',users.length);
   });
 })
 server.listen(port, function() {

@@ -174,7 +174,7 @@
 
             Vue.component('gamelist-item', {
               props: ['all'],
-              template: '<div class="gamelist"><div v-for="item in all.games" @click="join(item)">{{item.id}}-{{item.players.length}}</div><div @click="newGame">N</div></div>',
+              template: '<div class="gamelist"><div v-if="item.status==\'pending\'" v-for="item in all.games" @click="join(item)">{{item.id}} {{item.players.length}}</div><div class="button" @click="newGame">NEW GAME</div></div>',
               
               methods: {
                   newGame: function () {
@@ -192,10 +192,17 @@
             Vue.component('gamesetup-item', {
               props: ['all','sid'],
               template: '<div class="gamelist">'+
-                          //'{{all}}'+
                           '<div v-for="item in all.players">'+
-                            '{{item.name}} {{item.ready}}'+
-                            '<div v-if="sid==item.id"><input type="checkbox" id="smlnd" @change="smildone(item)"></input><label for="smlnd">ready</label></div>'+
+                            '{{item.name}}'+
+                            '<span v-if="sid==item.id">'+
+                              '<input type="checkbox" id="smlnd" @change="smildone(item)"></input>'+
+                              '<label for="smlnd">ready</label>'+
+                            '</span>'+
+                            '<span v-if="sid!=item.id">'+
+                              '<input v-if="item.ready" type="checkbox" disabled checked></input>'+
+                              '<input v-if="!item.ready" type="checkbox" disabled></input>'+
+                              '<label >ready</label>'+
+                            '</span>'+
                           '</div>'+
                         '</div>',
               methods: {
@@ -222,12 +229,12 @@
                             '</div>'+
                             '<div v-for="(player, index) in all.players" v-if="player.id==all.attack.to">'+
                               '<div>Defender {{player.name}}</div>'+
-                              '<div><label for="lifes">Life</label> <input type="number" class="atkInput" id="lifes" :max="player.hp" @change="handleChange(all.attack,player,$event)" :value="player.hp-all.attack.amounttemp"></input></div>'+
+                              '<div><label for="lifes">Life </label><span v-if="sid!=all.attack.to">{{player.hp}}</span><input v-if="sid==all.attack.to" type="number" class="atkInput" id="lifes" :max="player.hp" @change="handleChange(all.attack,player,$event)" :value="player.hp-all.attack.amounttemp"></input></div>'+
                                 '<div v-for="c in player.tablecards">'+
-                                 '{{c.name}}<input type="number" class="atkInput" :max="c.hp" @change="handleChangeDef(all,c,$event)" :value="c.hp-(c.amounttemp || 0)"></input>'+
+                                 '{{c.name}} <span v-if="sid!=all.attack.to">{{c.hp}}</span><input v-if="sid==all.attack.to" type="number" class="atkInput" :max="c.hp" @change="handleChangeDef(all,c,$event)" :value="c.hp-(c.amounttemp || 0)"></input>'+
                                 '</div>'+
                             '</div>'+
-                            '<div class="button" @click="handleAttack(all)">OK</div>'+
+                            '<div v-if="sid==all.attack.to" class="button" @click="handleAttack(all)">OK</div>'+
                           '</div>'+
                         '</div>',
               methods: {
@@ -272,13 +279,15 @@
                           '<div class="deck" @click="getCard"></div>'+
                           '<div :class="{myField : item.id==sid, enemyField : item.id!=sid}" v-for="(item, index) in all.players">'+
                             '<div class="">'+
-                              '<div>{{item.name}}- {{index==all.turn}}</div>'+
+                              '{{item.name}}'+
+                              '<span v-if="index==all.turn && sid!=item.id"> IS PLAYING</span>'+
+                              '<span v-if="index==all.turn && sid==item.id"> YOUR TURN</span>'+
                               '<div>hp {{item.hp}}</div>'+
                               '<div>atk {{item.atk}}</div>'+
                               '<div>Moves {{item.moves}}</div>'+
                               '<div calss="button" v-if="index==all.turn && item.id==sid"  @click="endTurn">END TURN</div>'+
-                              //'<div calss="button" v-if="all.players[all.turn].id == sid && item.id!=sid"  @click="attack(item)">ATTACK</div>'+
-                              '<div calss="button" @click="attack(item)">ATTACK</div>'+
+                              '<div calss="button" v-if="all.players[all.turn].id == sid && item.id!=sid"  @click="attack(item)">ATTACK</div>'+
+                              //'<div calss="button" @click="attack(item)">ATTACK</div>'+
                               '<div class="tableCards">'+
                                 '<div class="card" v-for="card in item.tablecards">'+
                                   '<div @click="actionTable(card,item.cards)">'+
@@ -294,11 +303,10 @@
                               '</div>'+
                               '<div class="handCards">'+
                                 '<div class="card"  v-for="card in item.cards">'+
-                                  '<div @click="actionHand(card,item.cards)">'+
+                                  '<div v-if="item.id==sid" @click="actionHand(card,item.cards)">'+
                                     '<div>{{card.name}}</div>'+
                                     '<div>HP {{card.hp}}</div>'+
                                     '<div>ATK {{card.atk}}</div>'+
-                                    '<div>DEF {{card.def}}</div>'+
                                   '</div>'+
                                   '<div class="cardMenu">'+
                                     '<div class=""  v-for="menuitem in card.menu">'+
@@ -503,12 +511,6 @@
             <input placeholder="None"  v-model="dataObj.secret"></input>
             <div  @click="settingsDone" class="button">OK</div>
             <div  @click="clearAll" class="button">CLEAR ALL</div>
-         </div>
-         <div v-if="dataObj.status=='chatting'">
-           <div class="messages" id="messages">
-             <messages-item  v-bind:all="dataObj"></messages-item>
-           </div>
-           <bar-item v-bind:all="dataObj"></bar-item>
          </div>
       </div>
    </body>
