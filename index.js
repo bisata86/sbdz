@@ -148,9 +148,20 @@ io.on('connection', (socket) => {
       socket.emit('listgames',games);
   });
   socket.on('newgame', function (data) {
-      var g = {id:data.name+'_game',players:[{id:socket.id,name:data.name,ready:false,cards:[],
-          tablecards:[],hp:50,
-          atk:0}],status:'pending'}
+      var g = {
+          id:data.name+'_game_'+Math.floor((Math.random()*1000)+1),
+          players:[
+            {
+              id:socket.id,
+              name:data.name,
+              ready:false,
+              cards:[],
+              tablecards:[],
+              hp:50,
+              atk:0
+            }
+          ],
+          status:'pending'}
       games.push(g)
       io.emit('listgames',games);
       socket.emit('status','gamesetup');
@@ -280,17 +291,24 @@ io.on('connection', (socket) => {
   socket.on('getcard', function (data) {
       var g = findGameByPlayer(socket.id)
       if(g) {
-        if(g.game.cards.length)
-        for (var i = 0; i < g.game.players.length; i++) {
-          if(socket.id==g.game.players[i].id) {
-            if(g.game.players[i].moves<=0) {
-              return false
+        if(g.game.cards.length) {
+          for (var i = 0; i < g.game.players.length; i++) {
+            if(socket.id==g.game.players[i].id) { 
+              if(g.game.players[g.game.turn].id==socket.id) {
+                if(g.game.players[i].moves<=0) {
+                  socket.emit('notify',{text:'No nore moves'})
+                  return false
+                }
+                g.game.players[i].moves--
+                g.game.players[i].cards.push(g.game.cards[0]);
+                g.game.cards.splice(0,1)
+              } else {
+                socket.emit('notify',{text:'Not your turn'})
+              }
+            } else {
+              //
             }
-            g.game.players[i].moves--
-            g.game.players[i].cards.push(g.game.cards[0]);
-            g.game.cards.splice(0,1)
           }
-
         }
         for (var i = 0; i < g.game.players.length; i++) {
           if(true) {
@@ -360,42 +378,52 @@ io.on('connection', (socket) => {
         if(data.action=='totable') {
           for (var i = g.game.players.length - 1; i >= 0; i--) {
             if(g.game.players[i].id==socket.id) {
-              if(g.game.players[i].moves<=0) {
-                return false
+              if(g.game.players[g.game.turn].id==socket.id) {
+                if(g.game.players[i].moves<=0) {
+                  socket.emit('notify',{text:'No nore moves'})
+                  return false
+                }
+                var ncards = [];
+                for (var b = g.game.players[i].cards.length - 1; b >= 0; b--) {
+                  if(g.game.players[i].cards[b].name!=data.card.name) {
+                    ncards.push(g.game.players[i].cards[b])
+                  } 
+                }
+                g.game.players[i].cards = ncards
+                g.game.players[i].atk += data.card.atk
+                g.game.players[i].moves--
+                g.game.players[i].tablecards.push(data.card)
+              } else {
+                socket.emit('notify',{text:'Not your turn'})
               }
-              var ncards = [];
-              for (var b = g.game.players[i].cards.length - 1; b >= 0; b--) {
-                if(g.game.players[i].cards[b].name!=data.card.name) {
-                  ncards.push(g.game.players[i].cards[b])
-                } 
-              }
-              g.game.players[i].cards = ncards
-              g.game.players[i].atk += data.card.atk
-              g.game.players[i].moves--
-              g.game.players[i].tablecards.push(data.card)
             } else {
-              //g.game.players[i].tempcards = JSON.parse(JSON.stringify(g.game.players[i].cards))
+              //socket.emit('notify',{text:'Not your turn'})
             }
           }
         }
         if(data.action=='tohand') {
           for (var i = g.game.players.length - 1; i >= 0; i--) {
             if(g.game.players[i].id==socket.id) {
-              if(g.game.players[i].moves<=0) {
-                return false
+              if(g.game.players[g.game.turn].id==socket.id) {
+                if(g.game.players[i].moves<=0) {
+                  socket.emit('notify',{text:'No more moves'})
+                  return false
+                }
+                var ncards = [];
+                for (var b = g.game.players[i].tablecards.length - 1; b >= 0; b--) {
+                  if(g.game.players[i].tablecards[b].name!=data.card.name) {
+                    ncards.push(g.game.players[i].tablecards[b])
+                  } 
+                }
+                g.game.players[i].tablecards = ncards
+                g.game.players[i].atk -= data.card.atk
+                g.game.players[i].moves--
+                g.game.players[i].cards.push(data.card)
+              } else {
+                socket.emit('notify',{text:'Not your turn'})
               }
-              var ncards = [];
-              for (var b = g.game.players[i].tablecards.length - 1; b >= 0; b--) {
-                if(g.game.players[i].tablecards[b].name!=data.card.name) {
-                  ncards.push(g.game.players[i].tablecards[b])
-                } 
-              }
-              g.game.players[i].tablecards = ncards
-              g.game.players[i].atk -= data.card.atk
-              g.game.players[i].moves--
-              g.game.players[i].cards.push(data.card)
             } else {
-              //g.game.players[i].tempcards = JSON.parse(JSON.stringify(g.game.players[i].cards))
+              //socket.emit('notify',{text:'Not your turn'})
             }
           }
           
@@ -474,18 +502,34 @@ io.on('connection', (socket) => {
           for (var i = g.game.players.length - 1; i >= 0; i--) {
             if(g.game.players[i].id==g.game.attack.to) {
                 g.game.players[i].hp -= data.attack.amounttemp
-
                 for (var p = 0; p < data.players[i].tablecards.length; p++) {
                   if(data.players[i].tablecards[p].amounttemp) {
                     g.game.players[i].tablecards[p].hp -= data.players[i].tablecards[p].amounttemp
                     delete data.players[i].tablecards[p].amounttemp
+                    if(g.game.players[i].tablecards[p].hp<=0) {
+                      g.game.players[i].tablecards[p].dead = true
+                    }
                   }
                 }
+                /*var newPlayers = []
+                for (var i = 0; i < g.game.players.length; i++) {
+                  if(g.game.players[i].hp>=0) {
+                    newPlayers.push(i,g.game.players[i])
+                  }
+                }
+                g.game.players = newPlayers;*/
 
             } else {
             }
           }
           delete g.game.attack
+        } else {
+          /*for (var i = g.game.players.length - 1; i >= 0; i--) {
+            if(g.game.players[i].id==g.game.attack.to) {
+                g.game.attack.message = g.game.players[i].name+' failed' 
+            }
+          }*/
+          
         }
         for (var i = 0; i < g.game.players.length; i++) {
             if(true) {
@@ -510,6 +554,7 @@ io.on('connection', (socket) => {
           g.game.players[i].cards = JSON.parse(JSON.stringify(g.game.players[i].tempcards))
           delete g.game.players[i].tempcards
         }
+        //delete g.game.attack.message
       }
       
       //io.to(data.id).emit('attack',{name:data.name,amount:data.atk})

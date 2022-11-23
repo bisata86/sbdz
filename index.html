@@ -149,6 +149,21 @@
       position: absolute;
       z-index: 11;
     }
+    .cardMenuItem {
+      padding: 5px;
+      cursor: pointer;
+    }
+    .message {
+      background: white;
+      height: fit-content;
+      width: fit-content;
+      position: absolute;
+      top:0;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      margin: auto;
+    }
     .attack {
       background: white;
       height: 200px;
@@ -159,6 +174,9 @@
       right: 0;
       left: 0;
       margin: auto;
+    }
+    .dead {
+      background: red;
     }
     .atkInput {
       display: inline-block;
@@ -230,16 +248,18 @@
               props: ['all','sid'],
               template: '<div class="overlay">'+
                           '<div class="attack">'+
+                            '{{all.attack.message}}'+
                             '<div v-for="(player, index) in all.players" v-if="player.id==all.attack.from">'+
                               '<div>Attacker {{player.name}}</div>'+
-                              '<div>Attack amount {{all.attack.amount-all.attack.amounttemp-all.attack.amounttempdefenders}} -{{all.attack.amounttemp}}--{{all.attack.amounttempdefenders}}-</div>'+
+                              '<div>Attack points {{all.attack.amount-all.attack.amounttemp-all.attack.amounttempdefenders}}</div>'+
                             '</div>'+
                             '<div v-for="(player, index) in all.players" v-if="player.id==all.attack.to">'+
                               '<div>Defender {{player.name}}</div>'+
-                              '<div><label for="lifes">Life </label><span v-if="sid!=all.attack.to">{{player.hp}}</span><input v-if="sid==all.attack.to" type="number" class="atkInput" id="lifes" :max="player.hp" @change="handleChange(all.attack,player,$event)" :value="player.hp-all.attack.amounttemp"></input></div>'+
-                                '<div v-for="c in player.tablecards">'+
+                              '<div v-for="c in player.tablecards">'+
                                  '{{c.name}} <span v-if="sid!=all.attack.to">{{c.hp}}</span><input v-if="sid==all.attack.to" type="number" class="atkInput" :max="c.hp" @change="handleChangeDef(all,c,$event)" :value="c.hp-(c.amounttemp || 0)"></input>'+
                                 '</div>'+
+                              '<div><label for="lifes">Life </label><span v-if="sid!=all.attack.to">{{player.hp}}</span><input v-if="sid==all.attack.to" type="number" class="atkInput" id="lifes" :max="player.hp" @change="handleChange(all.attack,player,$event)" :value="player.hp-all.attack.amounttemp"></input></div>'+
+                                
                             '</div>'+
                             '<div v-if="sid==all.attack.to" class="button" @click="handleAttack(all)">OK</div>'+
                           '</div>'+
@@ -284,32 +304,37 @@
               template: '<div class="playerLayout" :layout="all.players.length">'+
                           
                           '<div class="deck" @click="getCard"></div>'+
-                          '<div :class="{myField : item.id==sid, enemyField : item.id!=sid}" v-for="(item, index) in all.players">'+
+                          '<div :class="{myField : item.id==sid, enemyField : item.id!=sid, dead : item.hp<=0}" v-for="(item, index) in all.players">'+
                             '<div class="">'+
                               '{{item.name}}'+
                               '<span v-if="index==all.turn && sid!=item.id"> IS PLAYING</span>'+
                               '<span v-if="index==all.turn && sid==item.id"> YOUR TURN</span>'+
-                              '<div>hp {{item.hp}}</div>'+
-                              '<div>atk {{item.atk}}</div>'+
-                              '<div>Moves {{item.moves}}</div>'+
-                              '<div calss="button" v-if="index==all.turn && item.id==sid"  @click="endTurn">END TURN</div>'+
-                              '<div calss="button" v-if="all.players[all.turn].id == sid && item.id!=sid"  @click="attack(item)">ATTACK</div>'+
-                              //'<div calss="button" @click="attack(item)">ATTACK</div>'+
+                              '<div>HP {{item.hp}}</div>'+
+                              '<div>ATK {{item.atk}}</div>'+
+                              '<div v-if="index==all.turn">Moves {{item.moves}}</div>'+
+                              '<div class="button" style="width:initial;" v-if="index==all.turn && item.id==sid"  @click="endTurn">END TURN</div>'+
+                              '<div class="button" style="width:initial;" v-if="all.players[all.turn].id == sid && item.id!=sid"  @click="attack(item,all)">ATTACK</div>'+
                               '<div class="tableCards">'+
-                                '<div class="card" v-for="card in item.tablecards">'+
-                                  '<div @click="actionTable(card,item.cards)">'+
+                                '<div class="card" v-if="!card.dead" v-for="card in item.tablecards">'+
+                                  '<div v-if="sid==item.id" @click="actionTable(card,item.cards)">'+
                                     '<div>{{card.name}}</div>'+
                                     '<div>HP {{card.hp}}</div>'+
+                                    '<div>ATK {{card.atk}}</div>'+
+                                  '</div>'+
+                                  '<div v-if="sid!=item.id">'+
+                                    '<div>{{card.name}}</div>'+
+                                    '<div>HP {{card.hp}}</div>'+
+                                    '<div>ATK {{card.atk}}</div>'+
                                   '</div>'+
                                   '<div class="cardMenu">'+
-                                    '<div class=""  v-for="menuitem in card.menu">'+
-                                      '<div  @click="menuitem.onclick(card)">{{menuitem.text}}</div>'+
+                                    '<div class="" v-for="menuitem in card.menu">'+
+                                      '<div class="cardMenuItem"  @click="menuitem.onclick(card)">{{menuitem.text}}</div>'+
                                     '</div>'+
                                   '</div>'+
                                 '</div>'+
                               '</div>'+
                               '<div class="handCards">'+
-                                '<div class="card"  v-for="card in item.cards">'+
+                                '<div class="card" v-if="!card.dead"  v-for="card in item.cards">'+
                                   '<div v-if="item.id==sid" @click="actionHand(card,item.cards)">'+
                                     '<div>{{card.name}}</div>'+
                                     '<div>HP {{card.hp}}</div>'+
@@ -317,7 +342,7 @@
                                   '</div>'+
                                   '<div class="cardMenu">'+
                                     '<div class=""  v-for="menuitem in card.menu">'+
-                                      '<div  @click="menuitem.onclick(card)">{{menuitem.text}}</div>'+
+                                      '<div class="cardMenuItem"  @click="menuitem.onclick(card)">{{menuitem.text}}</div>'+
                                     '</div>'+
                                   '</div>'+
                                 '</div>'+
@@ -341,10 +366,11 @@
                         },
                         text:'Play card'
                       },{
-                        onclick:function(){
-                          alert('todo')
+                        onclick:function(item){
+                          item.menu = []
+                          app.dataObj.info = item
                         },
-                        text:'Zoom'
+                        text:'Info'
                       },{
                         onclick:function(item){
                           item.menu = []
@@ -369,10 +395,11 @@
                         text:'Retire card'
                       },
                       {
-                        onclick:function(){
-                          alert('todo')
+                        onclick:function(item){
+                          item.menu = []
+                          app.dataObj.info = item
                         },
-                        text:'Zoom'
+                        text:'Info'
                       },{
                         onclick:function(item){
                           item.menu = []
@@ -388,8 +415,14 @@
                   endTurn: function () {
                     socket.emit('endturn')
                   },
-                  attack: function (item) {
-                    socket.emit('attack',item)
+                  attack: function (item,all) {
+                    console.log(item)
+                    console.log(all.players[all.turn])
+                    if(all.players[all.turn].atk==0) {
+                      app.notify("Can't attack with 0")
+                    } else {
+                      socket.emit('attack',item)
+                    }
                   },
                   
                 }
@@ -408,7 +441,8 @@
                   canvasUrl: '',
                   countUsers:0,
                   games:[],
-                  current:{}
+                  current:{},
+                  info:''
                 }
               },
               created () {
@@ -422,10 +456,17 @@
                 }
                 document.getElementById('app').style.display = "block"
                 socket.emit('ready')
-                window.addEventListener("resize", this.scrollToBottom);
+                //window.addEventListener("resize", this.scrollToBottom);
                 
               },
               methods: {
+                  notify(m) {
+                    console.log(m)
+                    app.dataObj.messages.push({text:m})
+                    setTimeout(function(){
+                       app.dataObj.messages.pop() 
+                    },1000)
+                  },
                   settingsDone:function(){
                     if(!app.dataObj.name) app.dataObj.name = '#'+Math.floor((Math.random()*1000)+1)
                     localStorage.setItem('sbdzname',app.dataObj.name)
@@ -441,34 +482,18 @@
                        document.getElementById("messages").scrollTop = document.getElementById("messagess").offsetHeight;
                     },10) 
                   },
-                  sendImage:function(a){
-                    // console.log(a)
-                    // const canvas = document.getElementById("canvas");
-                    // const ctx = canvas.getContext("2d");
-                    // ctx.drawImage(a, 0, 0);
-                    canvas  = document.getElementById("canvas");
-                    context = canvas.getContext('2d');
-
-                    img = new Image();
-                    img.src = a;
-                    img.onload = function (e)
-                    {
-                        var perc = img.width/img.height
-                        canvas.width = 200
-                        canvas.height = canvas.width/perc
-                        context.drawImage(img, 0, 0,canvas.width,canvas.height);
-                        socket.emit('send',{
-                          text:CryptoJS.AES.encrypt(canvas.toDataURL(), app.dataObj.secret).toString(),
-                          author:CryptoJS.AES.encrypt(app.dataObj.name, app.dataObj.secret).toString()
-                        })
-                        
-                    }
+                  closeInfo:function(){
+                    console.log(123)
+                    app.dataObj.info = null
                   }
                 }
             }) 
 
             socket.on('console', function(data){
                 console.log(data)
+            });
+            socket.on('notify', function(data){
+                app.notify(data.text)
             });
             socket.on('listgames', function(data){
                 app.dataObj.socketid = socket.id;
@@ -498,6 +523,7 @@
 
    <body>
       <div id="app" style="display:none;">
+         
         <div v-if="dataObj.status=='ready'">
           <gamelist-item  v-bind:all="dataObj"></gamelist-item>
         </div>
@@ -506,6 +532,24 @@
          </div>
          <div v-if="dataObj.status=='game'">
             <gameplay-item  v-bind:all="dataObj.current" v-bind:sid="dataObj.socketid"></gameplay-item>
+         </div>
+         <div class="overlay" v-if="dataObj.messages.length">
+           <div class="message" v-for="message in dataObj.messages">
+              {{message.text}}
+           </div>
+         </div>
+          <div class="overlay" v-if="dataObj.info">
+           <div class="message">
+              <div class="" @click="closeInfo">
+                CLOSE
+              </div>
+               <div class="card">
+                {{dataObj.info.name}}
+              </div>
+              
+              
+           </div>
+           
          </div>
          <div class="settings" v-if="dataObj.status=='settings'">
             <div class="label">Name</div>
