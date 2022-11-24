@@ -34,26 +34,39 @@ var cards = [
   {name:'Lupo mannaro che si sega le gambe',
     hp: 12,
     atk: 2,
-    src:'/imgs/werewolf.jpg',
-    specials: {
-      atk:[],
-      def:[],
-    }
-  },
-  {name:'Semensa',
-    hp: 10,
-    atk: 10,
-    src:'/imgs/semensa.jpg',
+    src:'/imgs/cicken.jpg',
     specials: {
       atk:[],
       def:[],
     }
   },
   {
+    name:'Semensa',
+    hp: 10000,
+    atk: 0,
+    src:'/imgs/cicken.jpg',
+    type:['instant'],
+    specials: {
+      active : {
+        single:
+        [
+          
+        ],
+        group:
+        [
+        {
+          target:'smelly',
+          atk:1000
+        }
+        ]
+      }
+    }
+  },
+  {
     name:'Chiappe fiappe',
     hp: 10,
     atk: 10,
-    src:'/imgs/werewolf.jpg',
+    src:'/imgs/cicken.jpg',
     specials: {
       atk:[],
       def:[],
@@ -62,7 +75,7 @@ var cards = [
   {name:'Skifasterking',
     hp: 10,
     atk: 10,
-    src:'/imgs/werewolf.jpg',
+    src:'/imgs/cicken.jpg',
     specials: {
       atk:[],
       def:[],
@@ -71,7 +84,7 @@ var cards = [
   {name:'Alfonso',
     hp: 10,
     atk: 10,
-    src:'/imgs/werewolf.jpg',
+    src:'/imgs/cicken.jpg',
     specials: {
       atk:[],
       def:[],
@@ -80,7 +93,7 @@ var cards = [
   {name:'Rasquf il bastardo',
     hp: 10,
     atk: 10,
-    src:'/imgs/semensa.jpg',
+    src:'/imgs/cicken.jpg',
     specials: {
       atk:[],
       def:[],
@@ -90,7 +103,7 @@ var cards = [
     name:'Edward faccia di merda',
     hp: 3,
     atk: 3,
-    src:'/imgs/edward.jpg',
+    src:'/imgs/cicken.jpg',
     descr: '',
     type:[],
     specials: {
@@ -118,7 +131,7 @@ var cards = [
     name:'La bestiacca intabarada e malvagia',
     hp: 3,
     atk: 3,
-    src:'/imgs/labestiaccaintabaradaemalvagia.png',
+    src:'/imgs/cicken.jpg',
     descr: 'Fa paura come una bastarda a Madracula e siccome è intabarada non teme i pessimi odori',
     type:['flying'],
     specials: {
@@ -155,7 +168,7 @@ for (var i = 0; i < cards.length; i++) {
   cards[i].menu = []
 }
 var users = [];
-var initCards = 2;
+var initCards = 4;
 var playerMoves = 3
 
 io.on('connection', (socket) => {
@@ -327,6 +340,8 @@ io.on('connection', (socket) => {
               //
             }
           }
+        } else {
+          socket.emit('notify',{text:'No more cards'})
         }
         for (var i = 0; i < g.game.players.length; i++) {
           if(true) {
@@ -411,11 +426,19 @@ io.on('connection', (socket) => {
                 g.game.players[i].atk += data.card.atk
                 g.game.players[i].moves--
                 g.game.players[i].tablecards.push(data.card)
+                let ggg = g.game.players[i]
+                if(data.card.type && data.card.type.indexOf('instant')!=-1) {
+                  setTimeout(function(){
+                    console.log('gestire istantanea')
+                    ggg.tablecards.pop();
+                    clearSendGame(g)
+                  },1000)
+                }
+
+
               } else {
                 socket.emit('notify',{text:'Not your turn'})
               }
-            } else {
-              //socket.emit('notify',{text:'Not your turn'})
             }
           }
         }
@@ -446,29 +469,10 @@ io.on('connection', (socket) => {
           }
           
         }
-        for (var i = 0; i < g.game.players.length; i++) {
-          if(true) {
-            g.game.players[i].tempcards = JSON.parse(JSON.stringify(g.game.players[i].cards))
-            for (var v = g.game.players[i].cards.length - 1; v >= 0; v--) {
-              g.game.players[i].cards[v].name = ''
-              g.game.players[i].cards[v].hp = ''
-              g.game.players[i].cards[v].atk = ''
-            }
-          }
-        }
-        for (var i = 0; i < g.game.players.length; i++) { 
-          g.game.players[i].cards = JSON.parse(JSON.stringify(g.game.players[i].tempcards))
-          io.to(g.game.players[i].id).emit('updategame',g.game)
-          for (var v = g.game.players[i].cards.length - 1; v >= 0; v--) {
-            g.game.players[i].cards[v].name = ''
-            g.game.players[i].cards[v].hp = ''
-            g.game.players[i].cards[v].atk = ''
-          }
-        }
-        for (var i = 0; i < g.game.players.length; i++) {
-          g.game.players[i].cards = JSON.parse(JSON.stringify(g.game.players[i].tempcards))
-          delete g.game.players[i].tempcards
-        }
+
+        clearSendGame(g)
+
+
       }
   });
   socket.on('attack', function (data) {
@@ -598,6 +602,33 @@ io.on('connection', (socket) => {
       }
 
   });
+
+  function clearSendGame(g) {
+        for (var i = 0; i < g.game.players.length; i++) {
+          if(true) {
+            g.game.players[i].tempcards = JSON.parse(JSON.stringify(g.game.players[i].cards))
+            for (var v = g.game.players[i].cards.length - 1; v >= 0; v--) {
+              g.game.players[i].cards[v].name = ''
+              g.game.players[i].cards[v].hp = ''
+              g.game.players[i].cards[v].atk = ''
+            }
+          }
+        }
+        for (var i = 0; i < g.game.players.length; i++) { 
+          g.game.players[i].cards = JSON.parse(JSON.stringify(g.game.players[i].tempcards))
+          io.to(g.game.players[i].id).emit('updategame',g.game)
+          for (var v = g.game.players[i].cards.length - 1; v >= 0; v--) {
+            g.game.players[i].cards[v].name = ''
+            g.game.players[i].cards[v].hp = ''
+            g.game.players[i].cards[v].atk = ''
+          }
+        }
+        for (var i = 0; i < g.game.players.length; i++) {
+          g.game.players[i].cards = JSON.parse(JSON.stringify(g.game.players[i].tempcards))
+          delete g.game.players[i].tempcards
+        }
+  }
+
 })
 server.listen(port, function() {
   console.log(`Listening on port ${port}`);
