@@ -122,14 +122,69 @@ var cards = [
       def:[],
     }
   },
-  {name:'Sarchiapone',
-    hp: 10,
-    atk: 10,
-    def: 4,
-    src:'/imgs/semensa.jpg',
+  {
+    name:'La bestiacca intabarada e malvagia',
+    hp: 3,
+    atk: 3,
+    src:'/imgs/labestiaccaintabaradaemalvagia.png',
+    descr: 'Fa paura come una bastarda a Madracula e siccome è intabarada non teme i pessimi odori',
     specials: {
-      atk:[],
-      def:[],
+      type:'flying',
+      atk:[{
+        'Mafracula':10
+      }]
+    }
+  },
+  {
+    name:'La bestiacca intabarada e malvagia',
+    hp: 3,
+    atk: 3,
+    src:'/imgs/labestiaccaintabaradaemalvagia.png',
+    descr: 'Fa paura come una bastarda a Madracula e siccome è intabarada non teme i pessimi odori',
+    specials: {
+      type:'flying',
+      atk:[{
+        'Mafracula':10
+      }]
+    }
+  },
+  {
+    name:'La bestiacca intabarada e malvagia',
+    hp: 3,
+    atk: 3,
+    src:'/imgs/labestiaccaintabaradaemalvagia.png',
+    descr: 'Fa paura come una bastarda a Madracula e siccome è intabarada non teme i pessimi odori',
+    specials: {
+      type:'flying',
+      atk:[{
+        'Mafracula':10
+      }]
+    }
+  },
+  {
+    name:'La bestiacca intabarada e malvagia',
+    hp: 3,
+    atk: 3,
+    src:'/imgs/labestiaccaintabaradaemalvagia.png',
+    descr: 'Fa paura come una bastarda a Madracula e siccome è intabarada non teme i pessimi odori',
+    specials: {
+      type:'flying',
+      atk:[{
+        'Mafracula':10
+      }]
+    }
+  },
+  {
+    name:'La bestiacca intabarada e malvagia',
+    hp: 3,
+    atk: 3,
+    src:'/imgs/labestiaccaintabaradaemalvagia.png',
+    descr: 'Fa paura come una bastarda a Madracula e siccome è intabarada non teme i pessimi odori',
+    specials: {
+      type:'flying',
+      atk:[{
+        'Mafracula':10
+      }]
     }
   },
 

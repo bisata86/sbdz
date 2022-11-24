@@ -577,7 +577,11 @@
            <div class="info">
               
                <div class="card">
-                {{dataObj.info.name}}
+                <div>{{dataObj.info.name}}</div>
+                <div class="cardImg"><img :src="dataObj.info.src"></img></div>
+                <div>{{dataObj.info.descr}}</div>
+                <div>HP {{dataObj.info.hp}}</div>
+                <div>ATK {{dataObj.info.atk}}</div>
               </div>
               <div class="button" @click="closeInfo">
                 CLOSE
