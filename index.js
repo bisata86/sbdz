@@ -103,7 +103,7 @@ var cards = [
     name:'Edward faccia di merda',
     hp: 3,
     atk: 3,
-    src:'/imgs/cicken.jpg',
+    src:'/imgs/edward.jpg',
     descr: '',
     type:[],
     specials: {
@@ -131,7 +131,7 @@ var cards = [
     name:'La bestiacca intabarada e malvagia',
     hp: 3,
     atk: 3,
-    src:'/imgs/cicken.jpg',
+    src:'/imgs/labestiaccaintabaradaemalvagia.png',
     descr: 'Fa paura come una bastarda a Madracula e siccome è intabarada non teme i pessimi odori',
     type:['flying'],
     specials: {
@@ -189,7 +189,8 @@ io.on('connection', (socket) => {
               cards:[],
               tablecards:[],
               hp:50,
-              atk:0
+              atk:0,
+              cardDim:0
             }
           ],
           status:'pending'}
@@ -224,7 +225,8 @@ io.on('connection', (socket) => {
           cards:[],
           tablecards:[],
           hp:50,
-          atk:0
+          atk:0,
+          cardDim:0
         })
         for (var i = 0; i < g.game.players.length; i++) {
           io.to(g.game.players[i].id).emit('updategame',g.game)
