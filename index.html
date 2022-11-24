@@ -361,6 +361,7 @@
                               '<div v-if="index==all.turn">Moves {{item.moves}}</div>'+
                               '<div class="button" style="width:initial;" v-if="index==all.turn && item.id==sid"  @click="endTurn">END TURN</div>'+
                               '<div class="button" style="width:initial;" v-if="all.players[all.turn].id == sid && item.id!=sid"  @click="attack(item,all)">ATTACK</div>'+
+                              //'<div class="button" style="width:initial;"  @click="attack(item,all)">ATTACK</div>'+
                               '<div class="tableCards">'+
                                 '<div class="card" :style="{ \'width\': (item.cardDim)+\'px\', \'height\': (item.cardDim*1.6)+\'px\'}" v-if="!card.dead" v-for="card in item.tablecards">'+
                                   '<div @click="actionTable(card,item.cards,sid,item.id)">'+

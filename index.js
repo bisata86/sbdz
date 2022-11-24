@@ -128,6 +128,34 @@ var cards = [
     }
   },
   {
+    name:'Madracula',
+    hp: 3,
+    atk: 3,
+    src:'/imgs/edward.jpg',
+    descr: '',
+    type:[],
+    specials: {
+      active : {
+        single:
+        [
+          
+        ],
+        group:
+        [
+        ]
+      },
+      passive : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      },
+
+    }
+  },
+  {
     name:'La bestiacca intabarada e malvagia',
     hp: 3,
     atk: 3,
@@ -291,29 +319,7 @@ io.on('connection', (socket) => {
           }
 
         } else {
-          for (var i = 0; i < g.game.players.length; i++) {
-            if(true) {
-              g.game.players[i].tempcards = JSON.parse(JSON.stringify(g.game.players[i].cards))
-              for (var v = g.game.players[i].cards.length - 1; v >= 0; v--) {
-                g.game.players[i].cards[v].name = ''
-                g.game.players[i].cards[v].hp = ''
-                g.game.players[i].cards[v].atk = ''
-              }
-            }
-          }
-          for (var i = 0; i < g.game.players.length; i++) { 
-            g.game.players[i].cards = JSON.parse(JSON.stringify(g.game.players[i].tempcards))
-            io.to(g.game.players[i].id).emit('updategame',g.game)
-            for (var v = g.game.players[i].cards.length - 1; v >= 0; v--) {
-              g.game.players[i].cards[v].name = ''
-              g.game.players[i].cards[v].hp = ''
-              g.game.players[i].cards[v].atk = ''
-            }
-          }
-          for (var i = 0; i < g.game.players.length; i++) {
-            g.game.players[i].cards = JSON.parse(JSON.stringify(g.game.players[i].tempcards))
-            delete g.game.players[i].tempcards
-          }
+          clearSendGame(g)
         }
 
         io.emit('listgames',games);
@@ -493,30 +499,7 @@ io.on('connection', (socket) => {
             }
           }
         }
-        
-        for (var i = 0; i < g.game.players.length; i++) {
-            if(true) {
-              g.game.players[i].tempcards = JSON.parse(JSON.stringify(g.game.players[i].cards))
-              for (var v = g.game.players[i].cards.length - 1; v >= 0; v--) {
-                g.game.players[i].cards[v].name = ''
-                g.game.players[i].cards[v].hp = ''
-                g.game.players[i].cards[v].atk = ''
-              }
-            }
-          }
-        for (var i = 0; i < g.game.players.length; i++) { 
-            g.game.players[i].cards = JSON.parse(JSON.stringify(g.game.players[i].tempcards))
-            io.to(g.game.players[i].id).emit('updategame',g.game)
-            for (var v = g.game.players[i].cards.length - 1; v >= 0; v--) {
-              g.game.players[i].cards[v].name = ''
-              g.game.players[i].cards[v].hp = ''
-              g.game.players[i].cards[v].atk = ''
-            }
-          }
-        for (var i = 0; i < g.game.players.length; i++) {
-          g.game.players[i].cards = JSON.parse(JSON.stringify(g.game.players[i].tempcards))
-          delete g.game.players[i].tempcards
-        }
+        clearSendGame(g)
       }
   });
   socket.on('handleattack', function (data) {
@@ -532,6 +515,7 @@ io.on('connection', (socket) => {
                     delete data.players[i].tablecards[p].amounttemp
                     if(g.game.players[i].tablecards[p].hp<=0) {
                       g.game.players[i].tablecards[p].dead = true
+                      g.game.players[i].atk-=g.game.players[i].tablecards[p].atk
                     }
                   }
                 }
@@ -555,29 +539,7 @@ io.on('connection', (socket) => {
           }*/
           
         }
-        for (var i = 0; i < g.game.players.length; i++) {
-            if(true) {
-              g.game.players[i].tempcards = JSON.parse(JSON.stringify(g.game.players[i].cards))
-              for (var v = g.game.players[i].cards.length - 1; v >= 0; v--) {
-                g.game.players[i].cards[v].name = ''
-                g.game.players[i].cards[v].hp = ''
-                g.game.players[i].cards[v].atk = ''
-              }
-            }
-          }
-        for (var i = 0; i < g.game.players.length; i++) { 
-            g.game.players[i].cards = JSON.parse(JSON.stringify(g.game.players[i].tempcards))
-            io.to(g.game.players[i].id).emit('updategame',g.game)
-            for (var v = g.game.players[i].cards.length - 1; v >= 0; v--) {
-              g.game.players[i].cards[v].name = ''
-              g.game.players[i].cards[v].hp = ''
-              g.game.players[i].cards[v].atk = ''
-            }
-          }
-        for (var i = 0; i < g.game.players.length; i++) {
-          g.game.players[i].cards = JSON.parse(JSON.stringify(g.game.players[i].tempcards))
-          delete g.game.players[i].tempcards
-        }
+        clearSendGame(g)
         //delete g.game.attack.message
       }
       
