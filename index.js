@@ -14,8 +14,8 @@ var games = [];
 var cards = [
   {
     name:'La gallina senza busto',
-    hp: 10,
-    atk: 10,
+    hp: 3,
+    atk: 2,
     src:'/imgs/cicken.jpg',
     specials: {
       atk:[],
@@ -23,8 +23,8 @@ var cards = [
     }
   },
   {name:'Busto di gallina',
-    hp: 10,
-    atk: 10,
+    hp: 4,
+    atk: 5,
     src:'/imgs/cicken.jpg',
     specials: {
       atk:[],
@@ -32,8 +32,8 @@ var cards = [
     }
   },
   {name:'Babbeo',
-    hp: 10,
-    atk: 10,
+    hp: 3,
+    atk: 4,
     src:'/imgs/werewolf.jpg',
     specials: {
       atk:[],
@@ -41,9 +41,8 @@ var cards = [
     }
   },
   {name:'Lupo mannaro che si sega le gambe',
-    hp: 10,
-    atk: 10,
-    def: 4,
+    hp: 12,
+    atk: 2,
     src:'/imgs/werewolf.jpg',
     specials: {
       atk:[],
@@ -53,8 +52,7 @@ var cards = [
   {name:'Semensa',
     hp: 10,
     atk: 10,
-    def: 4,
-    src:'/imgs/werewolf.jpg',
+    src:'/imgs/semensa.jpg',
     specials: {
       atk:[],
       def:[],
@@ -64,7 +62,6 @@ var cards = [
     name:'Chiappe fiappe',
     hp: 10,
     atk: 10,
-    def: 4,
     src:'/imgs/werewolf.jpg',
     specials: {
       atk:[],
@@ -74,7 +71,6 @@ var cards = [
   {name:'Skifasterking',
     hp: 10,
     atk: 10,
-    def: 4,
     src:'/imgs/werewolf.jpg',
     specials: {
       atk:[],
@@ -84,7 +80,6 @@ var cards = [
   {name:'Alfonso',
     hp: 10,
     atk: 10,
-    def: 4,
     src:'/imgs/werewolf.jpg',
     specials: {
       atk:[],
@@ -94,7 +89,7 @@ var cards = [
   {name:'Edward faccia di merda',
     hp: 10,
     atk: 10,
-    def: 4,
+    src:'/imgs/semensa.jpg',
     specials: {
       atk:[],
       def:[],
@@ -103,16 +98,16 @@ var cards = [
   {name:'Rasquf il bastardo',
     hp: 10,
     atk: 10,
-    def: 4,
+    src:'/imgs/semensa.jpg',
     specials: {
       atk:[],
       def:[],
     }
   },
-  {name:'aaaa',
+  {name:'Babbano',
     hp: 10,
     atk: 10,
-    def: 4,
+    src:'/imgs/semensa.jpg',
     specials: {
       atk:[],
       def:[],
@@ -121,16 +116,17 @@ var cards = [
   {name:'bbbbb',
     hp: 10,
     atk: 10,
-    def: 4,
+    src:'/imgs/semensa.jpg',
     specials: {
       atk:[],
       def:[],
     }
   },
-  {name:'ccccc',
+  {name:'Sarchiapone',
     hp: 10,
     atk: 10,
     def: 4,
+    src:'/imgs/semensa.jpg',
     specials: {
       atk:[],
       def:[],
