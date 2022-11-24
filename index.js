@@ -7,7 +7,7 @@ const port = process.env.PORT || 3000;
 app.use(express.static(__dirname + '/', {
     maxage: process.env.NODE_ENV == "production" ? '0d' : '0d'
 })) 
-app.get('*', function(req, res) {
+app.get('/', function(req, res) {
    res.sendfile('index.html');
 });
 var games = [];
@@ -16,7 +16,7 @@ var cards = [
     name:'La gallina senza busto',
     hp: 10,
     atk: 10,
-    def: 4,
+    src:'/imgs/cicken.jpg',
     specials: {
       atk:[],
       def:[],
@@ -25,16 +25,16 @@ var cards = [
   {name:'Busto di gallina',
     hp: 10,
     atk: 10,
-    def: 4,
+    src:'/imgs/cicken.jpg',
     specials: {
       atk:[],
       def:[],
     }
   },
-  {name:'Ladu',
+  {name:'Babbeo',
     hp: 10,
     atk: 10,
-    def: 4,
+    src:'/imgs/werewolf.jpg',
     specials: {
       atk:[],
       def:[],
@@ -44,6 +44,7 @@ var cards = [
     hp: 10,
     atk: 10,
     def: 4,
+    src:'/imgs/werewolf.jpg',
     specials: {
       atk:[],
       def:[],
@@ -53,6 +54,7 @@ var cards = [
     hp: 10,
     atk: 10,
     def: 4,
+    src:'/imgs/werewolf.jpg',
     specials: {
       atk:[],
       def:[],
@@ -63,6 +65,7 @@ var cards = [
     hp: 10,
     atk: 10,
     def: 4,
+    src:'/imgs/werewolf.jpg',
     specials: {
       atk:[],
       def:[],
@@ -72,6 +75,7 @@ var cards = [
     hp: 10,
     atk: 10,
     def: 4,
+    src:'/imgs/werewolf.jpg',
     specials: {
       atk:[],
       def:[],
@@ -81,6 +85,7 @@ var cards = [
     hp: 10,
     atk: 10,
     def: 4,
+    src:'/imgs/werewolf.jpg',
     specials: {
       atk:[],
       def:[],

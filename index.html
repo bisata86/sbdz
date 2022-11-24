@@ -67,7 +67,8 @@
       vertical-align: bottom;
       overflow: hidden;
       border: 1px solid black;
-          margin: 0 1px;
+      margin: 0 1px;
+      box-sizing: border-box;
     }
     .handCards {
       position: absolute;
@@ -84,6 +85,12 @@
         left: 0;
         margin: auto;
         width: max-content;
+    }
+    .card .cardImg {
+      width: 100%;
+    }
+    .card .cardImg img {
+      width: 100%;
     }
     .myField {
         position: absolute;
@@ -138,9 +145,11 @@
     }
     .cardMenu {
       z-index: 100;
-      background: gray;
+      background: rgba(0,0,0,.5);
       position: absolute;
       bottom:0px;
+      padding: 10px;
+      border-radius: 5px;
     }
     .overlay {
       background: rgba(0,0,0,.5);
@@ -152,8 +161,9 @@
     .cardMenuItem {
       padding: 5px;
       cursor: pointer;
+      min-width: 100px;
     }
-    .message {
+    .message, .info {
       background: white;
       height: fit-content;
       width: fit-content;
@@ -163,6 +173,15 @@
       right: 0;
       left: 0;
       margin: auto;
+    }
+    .info {
+      max-width: 200px;
+      padding: 5px;
+    }
+    .info .card {
+      width: 200px;
+      height: 300px;
+      margin:0;
     }
     .attack {
       background: white;
@@ -182,6 +201,12 @@
       display: inline-block;
       width: 50px;
     }
+    .gameSetup, .gamelist {
+      padding: 10px;
+    }
+    .tc {
+      text-align: center;
+    }
 
    </style>
    <script>
@@ -195,7 +220,7 @@
 
             Vue.component('gamelist-item', {
               props: ['all'],
-              template: '<div class="gamelist"><div v-if="item.status==\'pending\'" v-for="item in all.games" >{{item.id}} -Players {{item.players.length}} <div @click="join(item)" class="button" style="width:initial;">JOIN</div></div><div class="button" @click="newGame">NEW GAME</div><div class="button" @click="settings">SETTINGS</div></div>',
+              template: '<div class="gamelist"><div class="tc">SBUDAZ</div><div v-if="item.status==\'pending\'" v-for="item in all.games" >{{item.id}} -Players {{item.players.length}} <div @click="join(item)" class="button" style="width:initial;">JOIN</div></div><div class="button" @click="newGame">NEW GAME</div><div class="button" @click="settings">SETTINGS</div></div>',
               
               methods: {
                   newGame: function () {
@@ -216,21 +241,26 @@
             })
             Vue.component('gamesetup-item', {
               props: ['all','sid'],
-              template: '<div class="gamelist">'+
+              template: '<div class="gameSetup">'+
+                          '<div style="border-bottom:1px solid black;padding:10px;">{{all.id}} {{all.status}}</div>'+
                           '<div v-for="item in all.players">'+
                             '{{item.name}}'+
                             '<span v-if="sid==item.id">'+
                               '<input type="checkbox" id="smlnd" @change="smildone(item)"></input>'+
-                              '<label for="smlnd">ready</label>'+
+                              '<label for="smlnd">I\'m ready</label>'+
                             '</span>'+
                             '<span v-if="sid!=item.id">'+
                               '<input v-if="item.ready" type="checkbox" disabled checked></input>'+
                               '<input v-if="!item.ready" type="checkbox" disabled></input>'+
-                              '<label >ready</label>'+
+                              '<label >Is ready</label>'+
                             '</span>'+
                           '</div>'+
+                          '<div class="button" @click="back">BACK</div>'+
                         '</div>',
               methods: {
+                  back: function (item) {
+                    window.location.reload();
+                  },
                   smildone: function (item) {
                     console.log(item)
                     item.changeReady = true
@@ -316,19 +346,16 @@
                               '<div class="button" style="width:initial;" v-if="all.players[all.turn].id == sid && item.id!=sid"  @click="attack(item,all)">ATTACK</div>'+
                               '<div class="tableCards">'+
                                 '<div class="card" v-if="!card.dead" v-for="card in item.tablecards">'+
-                                  '<div v-if="sid==item.id" @click="actionTable(card,item.cards)">'+
+                                  '<div @click="actionTable(card,item.cards,sid,item.id)">'+
                                     '<div>{{card.name}}</div>'+
+                                    '<div class="cardImg"><img :src="card.src"></img></div>'+
                                     '<div>HP {{card.hp}}</div>'+
                                     '<div>ATK {{card.atk}}</div>'+
                                   '</div>'+
-                                  '<div v-if="sid!=item.id">'+
-                                    '<div>{{card.name}}</div>'+
-                                    '<div>HP {{card.hp}}</div>'+
-                                    '<div>ATK {{card.atk}}</div>'+
-                                  '</div>'+
-                                  '<div class="cardMenu">'+
+                                  
+                                  '<div class="cardMenu" v-if="card.menu.length">'+
                                     '<div class="" v-for="menuitem in card.menu">'+
-                                      '<div class="cardMenuItem"  @click="menuitem.onclick(card)">{{menuitem.text}}</div>'+
+                                      '<div class="cardMenuItem button"  @click="menuitem.onclick(card)">{{menuitem.text}}</div>'+
                                     '</div>'+
                                   '</div>'+
                                 '</div>'+
@@ -337,12 +364,13 @@
                                 '<div class="card" v-if="!card.dead"  v-for="card in item.cards">'+
                                   '<div v-if="item.id==sid" @click="actionHand(card,item.cards)">'+
                                     '<div>{{card.name}}</div>'+
+                                    '<div class="cardImg"><img :src="card.src"></img></div>'+
                                     '<div>HP {{card.hp}}</div>'+
                                     '<div>ATK {{card.atk}}</div>'+
                                   '</div>'+
-                                  '<div class="cardMenu">'+
+                                  '<div class="cardMenu" v-if="card.menu.length">'+
                                     '<div class=""  v-for="menuitem in card.menu">'+
-                                      '<div class="cardMenuItem"  @click="menuitem.onclick(card)">{{menuitem.text}}</div>'+
+                                      '<div class="cardMenuItem button"  @click="menuitem.onclick(card)">{{menuitem.text}}</div>'+
                                     '</div>'+
                                   '</div>'+
                                 '</div>'+
@@ -352,8 +380,10 @@
                            '<div v-if="all.attack"><attack-item v-bind:all="all" v-bind:sid="sid"></attack-item></div>'+
                         '</div>',
               methods: {
-                  actionHand: function (item,cards) {
+                  actionHand: function (item,cards,a,b) {
                       
+
+
                       for (var i = cards.length - 1; i >= 0; i--) {
                         cards[i].menu = []
                       }
@@ -380,8 +410,13 @@
                     ]
                     
                   },
-                  actionTable: function (item,cards) {
+                  actionTable: function (item,cards,a,b) {
                       
+                      console.log(a,b)
+                      if(a!=b) {
+                        return false
+                      }
+
                       for (var i = cards.length - 1; i >= 0; i--) {
                         cards[i].menu = []
                       }
@@ -539,12 +574,13 @@
            </div>
          </div>
           <div class="overlay" v-if="dataObj.info">
-           <div class="message">
-              <div class="" @click="closeInfo">
-                CLOSE
-              </div>
+           <div class="info">
+              
                <div class="card">
                 {{dataObj.info.name}}
+              </div>
+              <div class="button" @click="closeInfo">
+                CLOSE
               </div>
               
               
