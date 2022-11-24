@@ -92,6 +92,10 @@
     .card .cardImg img {
       width: 100%;
     }
+    .info .card .cardImg img {
+      width: 100%;
+      height: 100px;
+    }
     .myField {
         position: absolute;
         width: 100%;
@@ -477,7 +481,7 @@
                   countUsers:0,
                   games:[],
                   current:{},
-                  info:''
+                  info: null
                 }
               },
               created () {
@@ -580,8 +584,28 @@
                 <div>{{dataObj.info.name}}</div>
                 <div class="cardImg"><img :src="dataObj.info.src"></img></div>
                 <div>{{dataObj.info.descr}}</div>
+                <div>{{dataObj.info.type}}</div>
                 <div>HP {{dataObj.info.hp}}</div>
                 <div>ATK {{dataObj.info.atk}}</div>
+                <div v-if="dataObj.info.specials">
+                  <div v-if="dataObj.info.specials.active">
+                    <div v-for="m in dataObj.info.specials.active.single">
+                       <div v-if="m.atk"><span v-if="m.atk>0">+</span>{{m.atk}} ATK vs {{m.target}}</div>
+                    </div>
+                    <div v-for="m in dataObj.info.specials.active.group">
+                       <div v-if="m.atk"><span v-if="m.atk>0">+</span>{{m.atk}} ATK vs {{m.target}}</div>
+                    </div>
+                  </div>
+                  <div v-if="dataObj.info.specials.passive">
+                    <div v-for="m in dataObj.info.specials.passive.single">
+                       <div v-if="m.atk"><span v-if="m.atk>0">+</span>{{m.atk}} HP vs {{m.target}}</div>
+                    </div>
+                    <div v-for="m in dataObj.info.specials.passive.group">
+                       <div v-if="m.atk"><span v-if="m.atk>0">+</span>{{m.atk}} HP vs {{m.target}}</div>
+                    </div>
+                  </div>
+                  
+                </div>
               </div>
               <div class="button" @click="closeInfo">
                 CLOSE
