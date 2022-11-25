@@ -13,39 +13,112 @@ app.get('/', function(req, res) {
 var games = [];
 var cards = [
   {
-    name:'La gallina senza busto',
+    name:'Ll bastardissimo col naso che becca',
     hp: 3,
-    atk: 2,
-    src:'/imgs/cicken.jpg',
+    atk: 3,
+    src:'/imgs/ilbastardissimocolnasochebecca.png',
+    type : ['negro'],
     specials: {
-      atk:[],
-      def:[],
+      with:[
+      ],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      }
     }
   },
-  {name:'Busto di gallina',
+  {
+    name:'Busto di gialina',
+    hp: 3,
+    atk: 3,
+    src:'/imgs/bustodigialina.png',
+    type : ['fly'],
+    specials: {
+      with:[
+        {
+          target:'Gialina senza busto',
+          atk:10
+        }
+      ],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      }
+    }
+  },
+  {
+    name:'La pantiana',
+    hp: 4,
+    atk: 3,
+    src:'/imgs/lapantiana.png',
+    specials: {
+      with:[
+      ],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      }
+    }
+  },
+  {
+    name:'Chel dal formadi',
     hp: 4,
     atk: 5,
-    src:'/imgs/cicken.jpg',
+    src:'/imgs/cheldalformadi.png',
     specials: {
-      atk:[],
-      def:[],
+      active : {
+        single:
+        [
+          {
+            target:'La pantiana',
+            atk:10
+          }
+        ],
+        group:
+        [
+        ]
+      },
     }
   },
   {name:'Lupo mannaro che si sega le gambe',
     hp: 12,
     atk: 2,
     src:'/imgs/cicken.jpg',
+    type:['norm'],
     specials: {
-      atk:[],
-      def:[],
+      active : {
+        single:
+        [
+
+        ],
+        group:
+        [
+          {
+            target:'smelly',
+            atk:10
+          }
+        ]
+      }
     }
   },
   {
-    name:'Semensa',
-    hp: 10000,
+    name:'Il cian di demonte',
+    hp: 0,
     atk: 0,
-    src:'/imgs/cicken.jpg',
-    type:['instant'],
+    src:'/imgs/ilciandidemonte.png',
+    type:['normal'],
     specials: {
       active : {
         single:
@@ -55,48 +128,402 @@ var cards = [
         group:
         [
         {
-          target:'smelly',
-          atk:1000
+          target:'all',
+          atk:+1
         }
         ]
       }
     }
   },
   {
-    name:'Chiappe fiappe',
-    hp: 10,
-    atk: 10,
-    src:'/imgs/cicken.jpg',
+    name:'Il gufo oscuro',
+    hp: 5,
+    atk: 4,
+    src:'/imgs/ilgufooscuro.png',
+    type:['fly'],
     specials: {
-      atk:[],
-      def:[],
+      active : {
+        single:
+        [
+          {
+            target:'Il topazzo scassacazzo',
+            atk:+10
+          }
+        ],
+        group:
+        [
+        ]
+      }
     }
   },
-  {name:'Skifasterking',
-    hp: 10,
-    atk: 10,
-    src:'/imgs/cicken.jpg',
+  {
+    name:'Il topazzo scassacazzo',
+    hp: 3,
+    atk: 4,
+    src:'/imgs/iltopazzoscassacazzo.png',
+    type:['vecchio'],
     specials: {
-      atk:[],
-      def:[],
+      active : {
+        single:
+        [
+          
+        ],
+        group:
+        [
+          {
+            target:'fly',
+            atk:10
+          }
+        ]
+      },
+    }
+  },
+  {
+    name:'La fecciona putrefatta',
+    hp: 9,
+    atk: 0,
+    src:'/imgs/lafeccionaputrefatta.png',
+    descr:"con le sue misere forze si spara fuori e va contro ai tuoi problemi parandoti il culo",
+    type:['smelly'],
+    specials: {
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      },
+    }
+  },
+  {
+    name:'Capo del K.K.K',
+    hp: 9,
+    atk: 0,
+    src:'/imgs/capodelkkk.png',
+    descr:"Odia i negri",
+    type:['norm'],
+    specials: {
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+          {
+            target:'negro',
+            atk:5
+          }
+        ]
+      },
+    }
+  },
+
+  {name:'Il cubo pieno di chiappe',
+    hp: 3,
+    atk: 3,
+    src:'/imgs/ilcubopienodichiappe.png',
+    type:['smelly'],
+    specials: {
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        {
+            target:'smelly',
+            atk:5
+          }
+        ]
+      },
+      passive : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      },
+
     }
   },
   {name:'Alfonso',
-    hp: 10,
-    atk: 10,
-    src:'/imgs/cicken.jpg',
+    hp: 4,
+    atk: 3,
+    src:'/imgs/alfonsolostronso.png',
+    descr: 'Confonde le idee cambiando le carte in tavola',
+    type:['norm'],
     specials: {
-      atk:[],
-      def:[],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      }
     }
   },
-  {name:'Rasquf il bastardo',
-    hp: 10,
-    atk: 10,
-    src:'/imgs/cicken.jpg',
+    {name:'Uselat mat',
+    hp: 4,
+    atk: 3,
+    src:'/imgs/uselatmat.png',
+    descr: 'Pippa',
+    type:['norm'],
     specials: {
-      atk:[],
-      def:[],
+      active : {
+        single:
+        [
+        {
+            target:'Buaaah',
+            atk:15
+          }
+        ],
+        group:
+        [
+        ]
+      }
+    }
+  },
+  { 
+    name:'Uomo astemio che beve a manetta',
+    hp: 5,
+    atk: 4,
+    src:'/imgs/uomoastemiochebeveamanetta.png',
+    type:['negro'],
+    descr: 'E\' potentissimo e ha le chiappe al vento',
+    specials: {
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      }
+    }
+  },
+  { 
+    name:'Dradagiaaah',
+    hp: 2,
+    atk: 2,
+    src:'/imgs/dradagiaaah.png',
+    type:['vecchio'],
+    descr: '',
+    specials: {
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      }
+    }
+  },
+  { 
+    name:'Liquame e putrefazione',
+    hp: 2,
+    atk: 2,
+    src:'/imgs/liquameeputrefazione.png',
+    type:['smelly'],
+    descr: '',
+    specials: {
+      active : {
+        with:[
+        {
+            target:'Merda e liquame',
+            atk:5
+          }
+        ],
+        single:
+        [
+
+        ],
+        group:
+        [
+        {
+            target:'smelly',
+            atk:1
+          }
+        ]
+      }
+    }
+  },
+  { 
+    name:'Ll bagigi incazzoso',
+    hp: 3,
+    atk: 3,
+    src:'/imgs/ilbagigiincazzoso.png',
+    type:['vecchio'],
+    descr: 'E\' un bagigi vecchio...',
+    specials: {
+      active : {
+        with:[
+        ],
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      }
+    }
+  },
+  { 
+    name:'Ll pachet di sigaretis che vuole i tuoi soldi',
+    hp: 3,
+    atk: 2,
+    src:'/imgs/ilpachetdisigaretischevuoleituoisoldi.png',
+    type:['norm'],
+    descr: '',
+    specials: {
+      active : {
+        with:[
+        ],
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      }
+    }
+  },
+  { 
+    name:'Terrone fellone',
+    hp: 4,
+    atk: 1,
+    src:'/imgs/terronefellone.png',
+    type:['norm'],
+    descr: 'Non ha voglia di fare un cazzo',
+    specials: {
+      active : {
+        with:[
+        ],
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      }
+    }
+  },
+  { 
+    name:'Il diavolo',
+    hp: 3,
+    atk: 2,
+    src:'/imgs/ildiavolo.png',
+    type:['norm'],
+    descr: 'Il diavolo in persona',
+    specials: {
+      active : {
+        with:[
+        {
+            target:'Merda e liquame',
+            atk:15
+          }
+        ],
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      }
+    }
+  },
+  {name:'Merda e liquame',
+    hp: 1,
+    atk: 0,
+    src:'/imgs/merdaeliquame.png',
+    specials: {
+      with: [
+          {
+            target:'all',
+            atk:1
+          },
+          {
+            target:'Chiappe infernali',
+            atk:3
+          }
+      ],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      },
+    }
+  },
+  {
+    name:'Ll gufo che ha paura dei vecchi',
+    hp: 3,
+    atk: 4,
+    src:'/imgs/ilgufochehapauradeivecchi.png',
+    type:['fly'],
+    specials: {
+      with: [
+      ],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+          {
+            target:'vecchio',
+            atk:-10
+          }        ]
+      },
+    }
+  },
+  {
+    name:'Il maruchin distrattore salamitico',
+    hp: 2,
+    atk: 2,
+    src:'/imgs/ilmaruchindistrattoresalamitico.png',
+    type:['normal'],
+    descr:'Vuole venderti cose',
+    specials: {
+      with: [
+      ],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      },
+    }
+  },
+  {
+    name:'Il seccatore salsiccioso',
+    hp: 3,
+    atk: 1,
+    src:'/imgs/ilseccatoresalsiccioso.png',
+    type:['normal'],
+    descr:'Prende tutti a salsicciate',
+    specials: {
+      with: [
+      ],
+      active : {
+        single:
+        [
+        {
+            target:'all',
+            atk:1
+          }
+        ],
+        group:
+        [
+        ]
+      },
     }
   },
   {
@@ -110,7 +537,6 @@ var cards = [
       active : {
         single:
         [
-          
         ],
         group:
         [
@@ -189,15 +615,162 @@ var cards = [
       },
 
     }
-  }
-
+  },
+  {
+    name:'Bisata piena e assonnata',
+    hp: 3,
+    atk: 1,
+    src:'/imgs/bisatapienaeassonnata.png',
+    type:['vecchio'],
+    descr:'Ti rutta in faccia',
+    specials: {
+      with: [
+      ],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      },
+    }
+  },
+  {
+    name:'Il conigliazzo che si crede potente',
+    hp: 1,
+    atk: 2,
+    src:'/imgs/ilconigliazzochesicredepotente.png',
+    type:['smelly'],
+    descr:'Al pusa',
+    specials: {
+      with: [
+      ],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      },
+    }
+  },
+  {
+    name:'Buaaah',
+    hp: 4,
+    atk: 5,
+    src:'/imgs/buaaah.png',
+    type:['normal'],
+    descr:'Il migliore',
+    specials: {
+      with: [
+      ],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      },
+    }
+  },
+  {
+    name:'Il masurin sasin fellone',
+    hp: 3,
+    atk: 1,
+    src:'/imgs/ilmasurinsasinfellone.png',
+    type:['flying'],
+    descr:'Culo e camicia col gufo oscuro',
+    specials: {
+      with: [
+          {
+            target:'Gufo oscuro',
+            atk:5
+          }
+      ],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      },
+    }
+  },
+  {
+    name:'Il giat che sbocca sempre',
+    hp: 3,
+    atk: 4,
+    src:'/imgs/ilgiatchesboccasempre.png',
+    type:['vecchio'],
+    descr:'Gli fa tutto cagare, cè vomito dappertutto',
+    specials: {
+      with: [
+      ],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      },
+    }
+  },
+  {
+    name:'Uomo comunissimo con naso e orelis enormi',
+    hp: 5,
+    atk: 5,
+    src:'/imgs/uomocomunissimoconnasoeorelisenormi.png',
+    type:['norm'],
+    descr:'Ha il naso e li orelis enormi',
+    specials: {
+      with: [
+      ],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      },
+    }
+  },
   ]
+
+
 for (var i = 0; i < cards.length; i++) {
+  for (var k = 0; k < cards.length; k++) {
+      if(cards[k].specials && cards[k].specials.active) {
+        if(cards[k].specials.active.single) {
+          for (var  l = 0; l < cards[k].specials.active.single.length; l++) {
+            if(cards[k].specials.active.single[l].target==cards[i].name) {
+               if(true) {
+                  if(!cards[i].specials.passive) {
+                    cards[i].specials.passive = {
+                      single:[],
+                      group:[]
+                    }
+                  }
+                  cards[i].specials.passive.single.push({
+                    target:cards[k].name,
+                    atk:-cards[k].specials.active.single[l].atk
+                  })
+               }
+            }
+          }
+        }
+      }
+  }
   cards[i].menu = []
 }
 var users = [];
-var initCards = 2;
-var playerMoves = 3
+var initCards = 4;
+var playerMoves = 4
 
 io.on('connection', (socket) => {
   users.push(socket.id)
@@ -490,12 +1063,40 @@ io.on('connection', (socket) => {
       if(g) {
         for (var i = 0; i < g.game.players.length; i++) {
           if(socket.id==g.game.players[i].id) {
-            g.game.attack = {
-              from:socket.id,
-              to:data.id,
-              amount:g.game.players[i].atk,
-              amounttemp:0,
-              amounttempdefenders:0
+            if(g.game.players[i].moves<=0) {
+              socket.emit('notify',{text:'No nore moves'})
+            } else {
+
+              var amountAttack = 0;
+              var descrAttack = [];
+              console.log(g.game.players[i].tablecards)
+              for (var  n = 0; n <g.game.players[i].tablecards.length; n++) {
+                console.log(g.game.players[i].tablecards[n])
+                var ctc = g.game.players[i].tablecards[n];
+                if(!ctc.dead) {
+                  amountAttack+=ctc.atk
+                  descrAttack.push(ctc.atk+' from '+ctc.name)
+                  for (var k = 0; k < ctc.specials.active.single.length; k++) {
+                    amountAttack+=10
+                    descrAttack.push('10'+' from '+'test')
+                  }
+                  for (var k = 0; k < ctc.specials.active.group.length; k++) {
+                    amountAttack+=10
+                    descrAttack.push('10'+' from '+'test')
+                  }
+
+                }
+              }
+
+
+              g.game.attack = {
+                from:socket.id,
+                to:data.id,
+                amount:amountAttack,//g.game.players[i].atk,
+                descr:descrAttack,
+                amounttemp:0,
+                amounttempdefenders:0
+              }
             }
           }
         }

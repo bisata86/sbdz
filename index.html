@@ -105,10 +105,6 @@
     .card .cardImg img {
       width: 100%;
     }
-    .info .card .cardImg img {
-      width: 100%;
-      height: 100px;
-    }
     .myField {
         position: absolute;
         width: 100%;
@@ -224,6 +220,9 @@
     .tc {
       text-align: center;
     }
+    .small {
+      font-size: xx-small;
+    }
 
    </style>
    <script>
@@ -299,13 +298,14 @@
                             '<div v-for="(player, index) in all.players" v-if="player.id==all.attack.from">'+
                               '<div>Attacker {{player.name}}</div>'+
                               '<div>Attack points {{all.attack.amount-all.attack.amounttemp-all.attack.amounttempdefenders}}</div>'+
+                              '<div v-for="descr in all.attack.descr" class="small">{{descr}}</div>'+
                             '</div>'+
                             '<div v-for="(player, index) in all.players" v-if="player.id==all.attack.to">'+
                               '<div>Defender {{player.name}}</div>'+
-                              '<div v-for="c in player.tablecards">'+
-                                 '{{c.name}} <span v-if="sid!=all.attack.to">{{c.hp}}</span><input v-if="sid==all.attack.to" type="number" class="atkInput" :max="c.hp" @change="handleChangeDef(all,c,$event)" :value="c.hp-(c.amounttemp || 0)"></input>'+
+                              '<div v-for="c in player.tablecards" v-if="c.hp>0">'+
+                                 '{{c.name}} <span v-if="sid!=all.attack.to">{{c.hp}}</span><input v-if="sid==all.attack.to" type="number" class="atkInput" :max="c.hp" :min="0" @change="handleChangeDef(all,c,$event)" :value="c.hp-(c.amounttemp || 0)"></input>'+
                                 '</div>'+
-                              '<div><label for="lifes">Life </label><span v-if="sid!=all.attack.to">{{player.hp}}</span><input v-if="sid==all.attack.to" type="number" class="atkInput" id="lifes" :max="player.hp" @change="handleChange(all.attack,player,$event)" :value="player.hp-all.attack.amounttemp"></input></div>'+
+                              '<div><label for="lifes">Life </label><span v-if="sid!=all.attack.to">{{player.hp}}</span><input v-if="sid==all.attack.to" type="number" class="atkInput" id="lifes" :max="player.hp" :min="0" @change="handleChange(all.attack,player,$event)" :value="player.hp-all.attack.amounttemp"></input></div>'+
                                 
                             '</div>'+
                             '<div v-if="sid==all.attack.to" class="button" @click="handleAttack(all)">OK</div>'+
@@ -318,6 +318,12 @@
                   handleChange: function (a,player,event) {
                     console.log(a,event)
                     a.amounttemp = player.hp-event.target.value
+                    /*if((a.amount-a.amounttemp-a.amounttempdefenders)<0) {
+                      a.amounttemp=0
+                      a.amounttempdefenders=0
+                    }*/
+
+
                     /*var total = player.hp
                     player.hpremoved = total-event.target.value
                     a.amounttemp = 12*/
@@ -636,6 +642,14 @@
                 <div>HP {{dataObj.info.hp}}</div>
                 <div>ATK {{dataObj.info.atk}}</div>
                 <div v-if="dataObj.info.specials">
+                  <div v-if="dataObj.info.specials.with">
+                    <div v-for="m in dataObj.info.specials.with">
+                       <div v-if="m.atk"><span v-if="m.atk>0">+</span>{{m.atk}} ATK with {{m.target}}</div>
+                    </div>
+                    <div v-for="m in dataObj.info.specials.active.group">
+                       <div v-if="m.atk"><span v-if="m.atk>0">+</span>{{m.atk}} ATK vs {{m.target}}</div>
+                    </div>
+                  </div>
                   <div v-if="dataObj.info.specials.active">
                     <div v-for="m in dataObj.info.specials.active.single">
                        <div v-if="m.atk"><span v-if="m.atk>0">+</span>{{m.atk}} ATK vs {{m.target}}</div>
