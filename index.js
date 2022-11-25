@@ -958,8 +958,8 @@ for (var i = 0; i < cards.length; i++) {
   cards[i].menu = []
 }
 var users = [];
-var initCards = 6;
-var playerMoves = 10
+var initCards = 4;
+var playerMoves = 4
 
 io.on('connection', (socket) => {
   users.push(socket.id)
@@ -1292,13 +1292,14 @@ io.on('connection', (socket) => {
                 g.game.attack = {
                   from:socket.id,
                   to:data.id,
-                  amount:amountAttack,//g.game.players[i].atk,
+                  amount:amountAttack,
                   descr:descrAttack,
                   amounttemp:0,
                   amounttempdefenders:0
                 }
               } else {
                 g.game.players[i].dead = true;
+                g.game.players[i].hp = -1; // 11
                 for (var cc = g.game.players.length - 1; cc >= 0; cc--) {
                    io.to(g.game.players[cc].id).emit('notify',{text:g.game.players[i].name+' is dead'})
                 }
