@@ -740,6 +740,154 @@ var cards = [
       },
     }
   },
+  {
+    name:'La sigaretta poderosa',
+    hp: 3,
+    atk: 3,
+    src:'/imgs/lasigarettapoderosa.png',
+    type:['norm'],
+    descr:'Ha paura dell\'impiante inferocito',
+    specials: {
+      with: [
+      ],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      },
+    }
+  },
+  {
+    name:'Lupo mannaro in fin di vita',
+    hp: 1,
+    atk: 1,
+    src:'/imgs/lupomannaroinfindivita.png',
+    type:['norm'],
+    descr:'E\' in fin di vita',
+    specials: {
+      with: [
+      ],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      },
+    }
+  },
+  {
+    name:'Il fantasma formerdaccia',
+    hp: 2,
+    atk: 3,
+    src:'/imgs/ilfantasmaformerdaccia.png',
+    type:['norm'],
+    descr:'Non ha paura di niente',
+    specials: {
+      with: [
+      ],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      },
+    }
+  },
+  {
+    name:'Il piede con le chiappe',
+    hp: 3,
+    atk: 4,
+    src:'/imgs/ilpiedeconlechiappe.png',
+    type:['negro'],
+    descr:'Ti caga nei piedi',
+    specials: {
+      with: [
+      ],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+          {
+            target:'negro',
+            atk:5
+          }
+        ]
+      },
+    }
+  },
+  {
+    name:'Il rospazzo con la bocca enorme',
+    hp: 2,
+    atk: 4,
+    src:'/imgs/ilrospazzoconlaboccaenorme.png',
+    type:['negro'],
+    descr:'Vuole morire',
+    specials: {
+      with: [
+      ],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      },
+    }
+  },
+  {
+    name:'Bala piena di lingua',
+    hp: 5,
+    atk: 2,
+    src:'/imgs/balapienadilingua.png',
+    type:['negro'],
+    descr:'mah..',
+    specials: {
+      with: [
+      ],
+      active : {
+        single:
+        [
+          {
+            target:'Vacia spudacia',
+            atk:5
+          }
+        ],
+        group:
+        [
+        ]
+      },
+    }
+  },
+  {
+    name:'Ketchappo tomatone',
+    hp: 0,
+    atk: 60,
+    src:'/imgs/ketchappotomatone.png',
+    type:['negro'],
+    descr:'Fortissimo ma muore subito',
+    specials: {
+      with: [
+      ],
+      active : {
+        single:
+        [
+        ],
+        group:
+        [
+        ]
+      },
+    }
+  },
   ]
 
 
