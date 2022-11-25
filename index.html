@@ -15,6 +15,7 @@
         padding: 0;
         margin: 0;
         border: 0;
+        overflow-x: hidden;
       }
       .mine {
         background: lightgreen;
@@ -373,7 +374,7 @@
                               '<div class="button" style="width:initial;" v-if="all.players[all.turn].id == sid && item.id!=sid"  @click="attack(item,all)">ATTACK</div>'+
                               //'<div class="button" style="width:initial;"  @click="attack(item,all)">ATTACK</div>'+
                               '<div class="tableCards">'+
-                                '<div class="card"   :style="{\'font-size\': (item.cardDim/10)+\'px\', \'width\': (item.cardDim)+\'px\', \'height\': (item.cardDim*1.6)+\'px\'}" v-if="!card.dead" v-for="card in item.tablecards">'+
+                                '<div class="card"   :style="{\'font-size\': (item.cardDim/7)+\'px\', \'width\': (item.cardDim)+\'px\', \'height\': (item.cardDim*1.6)+\'px\'}" v-if="!card.dead" v-for="card in item.tablecards">'+
                                   '<div @click="actionTable(card,item.cards,sid,item.id)">'+
                                     '<div class="cardName">{{card.name}}</div>'+
                                     '<div class="cardImg"><img :src="card.src"></img></div>'+
@@ -389,7 +390,7 @@
                                 '</div>'+
                               '</div>'+
                               '<div class="handCards">'+
-                                '<div :style="{\'font-size\': (cdim/10)+\'px\', \'width\': (cdim)+\'px\', \'height\': (cdim*1.6)+\'px\'}" class="card" v-if="!card.dead"  v-for="card in item.cards">'+
+                                '<div :style="{\'font-size\': (cdim/7)+\'px\', \'width\': (cdim)+\'px\', \'height\': (cdim*1.6)+\'px\'}" class="card" v-if="!card.dead"  v-for="card in item.cards">'+
                                   '<div v-if="item.id==sid" @click="actionHand(card,item.cards)">'+
                                     '<div class="cardName">{{card.name}}</div>'+
                                     '<div class="cardImg"><img :src="card.src"></img></div>'+
@@ -418,7 +419,7 @@
 
                     for (var i = this.all.players.length - 1; i >= 0; i--) {
                       if(this.all.players[i].id) {
-                         var temp = (window.innerWidth*80/100)/((this.all.players[i].tablecards.length)+1);
+                         var temp = (window.innerWidth*90/100)/((this.all.players[i].tablecards.length)+1);
                          while(temp*1.6>(window.innerHeight*25/100)) {
                             temp--
                          }
@@ -432,7 +433,7 @@
                         countcards = this.all.players[i].cards.length
                       }
                     }
-                    var temp  = (window.innerWidth*80/100)/(countcards+1)
+                    var temp  = (window.innerWidth*90/100)/(countcards+1)
                     
                     while(temp*1.6>(window.innerHeight*25/100)) {
                       temp--
