@@ -934,8 +934,8 @@ for (var i = 0; i < cards.length; i++) {
   cards[i].menu = []
 }
 var users = [];
-var initCards = 5;
-var playerMoves = 4
+var initCards = 4;
+var playerMoves = 3
 
 io.on('connection', (socket) => {
   users.push(socket.id)
