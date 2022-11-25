@@ -70,11 +70,13 @@
       margin: 0 0.5px;
       box-sizing: border-box;
       text-align: left;
+      border-radius: 2%;
     }
     .cardName {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      padding: 2px 0 2px 2px;
     }
     .ellipsis {
       white-space: nowrap;
@@ -153,8 +155,9 @@
       top: 0;
       bottom: 0;
       margin: auto;
-      right: 10px;
+      right: -40px;
       z-index: 10;
+      border-radius: 5%;
     }
     .cardMenu {
       z-index: 100;
@@ -370,9 +373,9 @@
                               '<div class="button" style="width:initial;" v-if="all.players[all.turn].id == sid && item.id!=sid"  @click="attack(item,all)">ATTACK</div>'+
                               //'<div class="button" style="width:initial;"  @click="attack(item,all)">ATTACK</div>'+
                               '<div class="tableCards">'+
-                                '<div class="card" :style="{ \'width\': (item.cardDim)+\'px\', \'height\': (item.cardDim*1.6)+\'px\'}" v-if="!card.dead" v-for="card in item.tablecards">'+
+                                '<div class="card"   :style="{\'font-size\': (item.cardDim/10)+\'px\', \'width\': (item.cardDim)+\'px\', \'height\': (item.cardDim*1.6)+\'px\'}" v-if="!card.dead" v-for="card in item.tablecards">'+
                                   '<div @click="actionTable(card,item.cards,sid,item.id)">'+
-                                    '<div class="ellipsis">{{card.name}}</div>'+
+                                    '<div class="cardName">{{card.name}}</div>'+
                                     '<div class="cardImg"><img :src="card.src"></img></div>'+
                                     '<div class="ellipsis">HP {{card.hp}}</div>'+
                                     '<div class="ellipsis">ATK {{card.atk}}</div>'+
@@ -386,7 +389,7 @@
                                 '</div>'+
                               '</div>'+
                               '<div class="handCards">'+
-                                '<div :style="{ \'width\': (cdim)+\'px\', \'height\': (cdim*1.6)+\'px\'}" class="card" v-if="!card.dead"  v-for="card in item.cards">'+
+                                '<div :style="{\'font-size\': (cdim/10)+\'px\', \'width\': (cdim)+\'px\', \'height\': (cdim*1.6)+\'px\'}" class="card" v-if="!card.dead"  v-for="card in item.cards">'+
                                   '<div v-if="item.id==sid" @click="actionHand(card,item.cards)">'+
                                     '<div class="cardName">{{card.name}}</div>'+
                                     '<div class="cardImg"><img :src="card.src"></img></div>'+
@@ -473,23 +476,20 @@
                   actionTable: function (item,cards,a,b) {
                       
                       console.log(a,b)
-                      if(a!=b) {
-                        return false
+
+                      var dynMenu = [];
+
+                      if(a==b) {
+                        dynMenu.push({
+                          onclick:function(){
+                            item.menu = []
+                            socket.emit('action',{card:item,action:'tohand'})
+                          },
+                          text:'Retire card'
+                        })
                       }
 
-                      for (var i = cards.length - 1; i >= 0; i--) {
-                        cards[i].menu = []
-                      }
-
-                      item.menu = [
-                      {
-                        onclick:function(){
-                          item.menu = []
-                          socket.emit('action',{card:item,action:'tohand'})
-                        },
-                        text:'Retire card'
-                      },
-                      {
+                      dynMenu.push({
                         onclick:function(item){
                           item.menu = []
                           app.dataObj.info = item
@@ -500,8 +500,13 @@
                           item.menu = []
                         },
                         text:'Close'
+                      })
+
+                      for (var i = cards.length - 1; i >= 0; i--) {
+                        cards[i].menu = []
                       }
-                    ]
+
+                      item.menu = dynMenu
                     
                   },
                   getCard: function () {
@@ -635,7 +640,7 @@
            <div class="info">
               
                <div class="card">
-                <div>{{dataObj.info.name}}</div>
+                <div class="cardName">{{dataObj.info.name}}</div>
                 <div class="cardImg"><img :src="dataObj.info.src"></img></div>
                 <div>{{dataObj.info.descr}}</div>
                 <div v-for="t in dataObj.info.type">{{t}}</div>

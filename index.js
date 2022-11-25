@@ -365,7 +365,7 @@ var cards = [
     }
   },
   { 
-    name:'Ll pachet di sigaretis che vuole i tuoi soldi',
+    name:'Il pachet di sigaretis che vuole i tuoi soldi',
     hp: 3,
     atk: 2,
     src:'/imgs/ilpachetdisigaretischevuoleituoisoldi.png',
@@ -454,7 +454,7 @@ var cards = [
     }
   },
   {
-    name:'Ll gufo che ha paura dei vecchi',
+    name:'Il gufo che ha paura dei vecchi',
     hp: 3,
     atk: 4,
     src:'/imgs/ilgufochehapauradeivecchi.png',
