@@ -1289,6 +1289,11 @@ io.on('connection', (socket) => {
 
               if(totalDefender>amountAttack) {
                 console.log(totalDefender,amountAttack)
+                for (var cc = g.game.players.length - 1; cc >= 0; cc--) {
+                  if(g.game.players[cc].id==socket.id) {
+                    g.game.players[cc].moves--;
+                  }
+                }
                 g.game.attack = {
                   from:socket.id,
                   to:data.id,
