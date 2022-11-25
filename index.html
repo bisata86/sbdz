@@ -46,7 +46,7 @@
           text-align: center;
           text-decoration: none;
           display: inline-block;
-          font-size: 16px;
+          font-size: 12px;
           margin-top: 10px;
           cursor: pointer;
           width: 100%;
@@ -423,8 +423,8 @@
                                   '<div v-if="item.id==sid" @click="actionHand(card,item.cards)">'+
                                     '<div class="cardName">{{card.name}}</div>'+
                                     '<div class="cardImg"><img :src="card.src"></img></div>'+
-                                    '<div class="ellipsis">HP {{card.hp}}</div>'+
                                     '<div class="ellipsis">ATK {{card.atk}}</div>'+
+                                    '<div class="ellipsis">HP {{card.hp}}</div>'+
                                   '</div>'+
                                   '<div class="cardMenu" v-if="card.menu.length">'+
                                     '<div class=""  v-for="menuitem in card.menu">'+
