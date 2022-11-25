@@ -86,7 +86,7 @@
     }
     .handCards {
       position: absolute;
-      bottom: 10px;
+      bottom: 1px;
       right: 0;
       left: 0;
       margin: auto;
@@ -367,8 +367,8 @@
                               '{{item.name}}'+
                               '<span v-if="index==all.turn && sid!=item.id"> IS PLAYING</span>'+
                               '<span v-if="index==all.turn && sid==item.id"> YOUR TURN</span>'+
-                              '<div>HP {{item.hp}}</div>'+
                               '<div>ATK {{item.atk}}</div>'+
+                              '<div>HP {{item.hp}}</div>'+
                               '<div v-if="index==all.turn">Moves {{item.moves}}</div>'+
                               '<div class="button" style="width:initial;" v-if="index==all.turn && item.id==sid"  @click="endTurn">END TURN</div>'+
                               '<div class="button" style="width:initial;" v-if="all.players[all.turn].id == sid && item.id!=sid"  @click="attack(item,all)">ATTACK</div>'+
@@ -378,10 +378,9 @@
                                   '<div @click="actionTable(card,item.cards,sid,item.id)">'+
                                     '<div class="cardName">{{card.name}}</div>'+
                                     '<div class="cardImg"><img :src="card.src"></img></div>'+
-                                    '<div class="ellipsis">HP {{card.hp}}</div>'+
                                     '<div class="ellipsis">ATK {{card.atk}}</div>'+
+                                    '<div class="ellipsis">HP {{card.hp}}</div>'+
                                   '</div>'+
-                                  
                                   '<div class="cardMenu" v-if="card.menu.length">'+
                                     '<div class="" v-for="menuitem in card.menu">'+
                                       '<div class="cardMenuItem button"  @click="menuitem.onclick(card)">{{menuitem.text}}</div>'+
@@ -633,8 +632,10 @@
             <gameplay-item  v-bind:all="dataObj.current" v-bind:cdim="dataObj.cdim" v-bind:sid="dataObj.socketid"></gameplay-item>
          </div>
          <div class="overlay" v-if="dataObj.messages.length">
-           <div class="message" style="padding: 5px;" v-for="message in dataObj.messages">
-              {{message.text}}
+           <div class="message" v-if="dataObj.messages.length">
+             <div class="" style="padding: 5px;" v-for="message in dataObj.messages">
+                {{message.text}}
+             </div>
            </div>
          </div>
           <div class="overlay" v-if="dataObj.info">
@@ -645,8 +646,8 @@
                 <div class="cardImg"><img :src="dataObj.info.src"></img></div>
                 <div>{{dataObj.info.descr}}</div>
                 <div v-for="t in dataObj.info.type">{{t}}</div>
-                <div>HP {{dataObj.info.hp}}</div>
                 <div>ATK {{dataObj.info.atk}}</div>
+                <div>HP {{dataObj.info.hp}}</div>
                 <div v-if="dataObj.info.specials">
                   <div v-if="dataObj.info.specials.with">
                     <div v-for="m in dataObj.info.specials.with">
