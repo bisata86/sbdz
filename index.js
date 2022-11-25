@@ -13,7 +13,7 @@ app.get('/', function(req, res) {
 var games = [];
 var cards = [
   {
-    name:'Ll bastardissimo col naso che becca',
+    name:'Il bastardissimo col naso che becca',
     hp: 3,
     atk: 3,
     src:'/imgs/ilbastardissimocolnasochebecca.png',
@@ -27,6 +27,10 @@ var cards = [
         ],
         group:
         [
+          {
+            target:'all',
+            atk:2
+          }
         ]
       }
     }
@@ -50,6 +54,10 @@ var cards = [
         ],
         group:
         [
+           {
+            target:'fly',
+            atk:1
+          }
         ]
       }
     }
@@ -59,6 +67,7 @@ var cards = [
     hp: 4,
     atk: 3,
     src:'/imgs/lapantiana.png',
+    type:['smelly'],
     specials: {
       with:[
       ],
@@ -68,6 +77,10 @@ var cards = [
         ],
         group:
         [
+           {
+            target:'negro',
+            atk:2
+          }
         ]
       }
     }
@@ -77,6 +90,7 @@ var cards = [
     hp: 4,
     atk: 5,
     src:'/imgs/cheldalformadi.png',
+    type:['normal'],
     specials: {
       active : {
         single:
@@ -90,27 +104,6 @@ var cards = [
         [
         ]
       },
-    }
-  },
-  {name:'Lupo mannaro che si sega le gambe',
-    hp: 12,
-    atk: 2,
-    src:'/imgs/cicken.jpg',
-    type:['norm'],
-    specials: {
-      active : {
-        single:
-        [
-
-        ],
-        group:
-        [
-          {
-            target:'smelly',
-            atk:10
-          }
-        ]
-      }
     }
   },
   {
@@ -270,7 +263,7 @@ var cards = [
     atk: 3,
     src:'/imgs/uselatmat.png',
     descr: 'Pippa',
-    type:['norm'],
+    type:['fly'],
     specials: {
       active : {
         single:
@@ -305,10 +298,10 @@ var cards = [
     }
   },
   { 
-    name:'Dradagiaaah',
+    name:'Dradagiaaaah',
     hp: 2,
     atk: 2,
-    src:'/imgs/dradagiaaah.png',
+    src:'/imgs/dradagiaaaah.png',
     type:['vecchio'],
     descr: '',
     specials: {
@@ -352,7 +345,7 @@ var cards = [
     }
   },
   { 
-    name:'Ll bagigi incazzoso',
+    name:'Il bagigi incazzoso',
     hp: 3,
     atk: 3,
     src:'/imgs/ilbagigiincazzoso.png',
@@ -587,7 +580,7 @@ var cards = [
     atk: 3,
     src:'/imgs/labestiaccaintabaradaemalvagia.png',
     descr: 'Fa paura come una bastarda a Madracula e siccome è intabarada non teme i pessimi odori',
-    type:['flying'],
+    type:['fly'],
     specials: {
       active : {
         single:
@@ -681,7 +674,7 @@ var cards = [
     hp: 3,
     atk: 1,
     src:'/imgs/ilmasurinsasinfellone.png',
-    type:['flying'],
+    type:['fly'],
     descr:'Culo e camicia col gufo oscuro',
     specials: {
       with: [
@@ -753,6 +746,10 @@ var cards = [
       active : {
         single:
         [
+          {
+            target:'Impiante inferocito',
+            atk:-5
+          }
         ],
         group:
         [
@@ -776,6 +773,10 @@ var cards = [
         ],
         group:
         [
+          {
+            target:'all',
+            atk:1
+          }
         ]
       },
     }
@@ -796,6 +797,10 @@ var cards = [
         ],
         group:
         [
+          {
+            target:'all',
+            atk:1
+          }
         ]
       },
     }
@@ -840,6 +845,10 @@ var cards = [
         ],
         group:
         [
+          {
+            target:'fly',
+            atk:5
+          }
         ]
       },
     }
@@ -864,6 +873,10 @@ var cards = [
         ],
         group:
         [
+          {
+            target:'fly',
+            atk:5
+          }
         ]
       },
     }
@@ -884,6 +897,10 @@ var cards = [
         ],
         group:
         [
+          {
+            target:'negro',
+            atk:5
+          }
         ]
       },
     }
@@ -917,7 +934,7 @@ for (var i = 0; i < cards.length; i++) {
   cards[i].menu = []
 }
 var users = [];
-var initCards = 4;
+var initCards = 5;
 var playerMoves = 4
 
 io.on('connection', (socket) => {
@@ -1209,6 +1226,15 @@ io.on('connection', (socket) => {
       io.to(data.id).emit('console','attacked')
       var g = findGameByPlayer(socket.id)
       if(g) {
+        var targetTowers;
+        for (var i = 0; i < g.game.players.length; i++) {
+          if(data.id==g.game.players[i].id) {
+            targetTowers = g.game.players[i].tablecards
+          }
+        }
+        console.log('targetTowers')
+        console.log(targetTowers)
+        console.log('---------')
         for (var i = 0; i < g.game.players.length; i++) {
           if(socket.id==g.game.players[i].id) {
             if(g.game.players[i].moves<=0) {
@@ -1225,14 +1251,27 @@ io.on('connection', (socket) => {
                   amountAttack+=ctc.atk
                   descrAttack.push(ctc.atk+' from '+ctc.name)
                   for (var k = 0; k < ctc.specials.active.single.length; k++) {
-                    amountAttack+=10
-                    descrAttack.push('10'+' from '+'test')
+                    var aattker = ctc.specials.active.single[k]
+                    for (var p = 0; p < targetTowers.length; p++) {
+                      if(targetTowers[p].name==aattker.target) {
+                        amountAttack+=aattker.atk
+                        descrAttack.push((aattker.atk>0?'+':'')+aattker.atk+' from '+ ctc.name)
+                      }
+                    }
                   }
                   for (var k = 0; k < ctc.specials.active.group.length; k++) {
-                    amountAttack+=10
-                    descrAttack.push('10'+' from '+'test')
+                    var aattker = ctc.specials.active.group[k]
+                    for (var p = 0; p < targetTowers.length; p++) {
+                      if(aattker.target == 'all') {
+                        amountAttack+=aattker.atk
+                        descrAttack.push((aattker.atk>0?'+':'')+aattker.atk+' from '+ctc.name)
+                      }
+                      else if(targetTowers[p].type.indexOf(aattker.target)!=-1) {
+                        amountAttack+=aattker.atk
+                        descrAttack.push((aattker.atk>0?'+':'')+aattker.atk+' from '+ctc.name+'('+targetTowers[p].name+' is '+targetTowers[p].type+')')
+                      }
+                    }
                   }
-
                 }
               }
 
@@ -1281,11 +1320,15 @@ io.on('connection', (socket) => {
           }
           delete g.game.attack
         } else {
-          /*for (var i = g.game.players.length - 1; i >= 0; i--) {
-            if(g.game.players[i].id==g.game.attack.to) {
-                g.game.attack.message = g.game.players[i].name+' failed' 
-            }
-          }*/
+          var defName = "";
+          for (var i = g.game.players.length - 1; i >= 0; i--) {
+             if(g.game.players[i].id==g.game.attack.to) {
+               defName = g.game.players[i].name
+             }
+          }
+          for (var i = g.game.players.length - 1; i >= 0; i--) {
+             io.to(g.game.players[i].id).emit('notify',{text:defName+' defence failure'})
+          }
           
         }
         clearSendGame(g)

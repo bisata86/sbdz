@@ -197,8 +197,9 @@
       margin:0;
     }
     .attack {
+      padding: 10px;
       background: white;
-      height: 200px;
+      height: fit-content;
       width: 300px;
       position: absolute;
       top:0;
@@ -366,8 +367,8 @@
                               '<div>ATK {{item.atk}}</div>'+
                               '<div v-if="index==all.turn">Moves {{item.moves}}</div>'+
                               '<div class="button" style="width:initial;" v-if="index==all.turn && item.id==sid"  @click="endTurn">END TURN</div>'+
-                              '<div class="button" style="width:initial;" v-if="all.players[all.turn].id == sid && item.id!=sid"  @click="attack(item,all)">ATTACK</div>'+
-                              //'<div class="button" style="width:initial;"  @click="attack(item,all)">ATTACK</div>'+
+                              //'<div class="button" style="width:initial;" v-if="all.players[all.turn].id == sid && item.id!=sid"  @click="attack(item,all)">ATTACK</div>'+
+                              '<div class="button" style="width:initial;"  @click="attack(item,all)">ATTACK</div>'+
                               '<div class="tableCards">'+
                                 '<div class="card" :style="{ \'width\': (item.cardDim)+\'px\', \'height\': (item.cardDim*1.6)+\'px\'}" v-if="!card.dead" v-for="card in item.tablecards">'+
                                   '<div @click="actionTable(card,item.cards,sid,item.id)">'+
@@ -455,6 +456,7 @@
                         text:'Play card'
                       },{
                         onclick:function(item){
+                          console.log(item)
                           item.menu = []
                           app.dataObj.info = item
                         },
@@ -572,11 +574,9 @@
                     window.location.reload();
                   },
                   scrollToBottom:function(){
-                    console.log(123)
                     this.dataObj.cdim = window.innerHeight*10/100
                   },
                   closeInfo:function(){
-                    console.log(123)
                     app.dataObj.info = null
                   }
                 }
@@ -627,7 +627,7 @@
             <gameplay-item  v-bind:all="dataObj.current" v-bind:cdim="dataObj.cdim" v-bind:sid="dataObj.socketid"></gameplay-item>
          </div>
          <div class="overlay" v-if="dataObj.messages.length">
-           <div class="message" v-for="message in dataObj.messages">
+           <div class="message" style="padding: 5px;" v-for="message in dataObj.messages">
               {{message.text}}
            </div>
          </div>
@@ -638,16 +638,13 @@
                 <div>{{dataObj.info.name}}</div>
                 <div class="cardImg"><img :src="dataObj.info.src"></img></div>
                 <div>{{dataObj.info.descr}}</div>
-                <div>{{dataObj.info.type}}</div>
+                <div v-for="t in dataObj.info.type">{{t}}</div>
                 <div>HP {{dataObj.info.hp}}</div>
                 <div>ATK {{dataObj.info.atk}}</div>
                 <div v-if="dataObj.info.specials">
                   <div v-if="dataObj.info.specials.with">
                     <div v-for="m in dataObj.info.specials.with">
                        <div v-if="m.atk"><span v-if="m.atk>0">+</span>{{m.atk}} ATK with {{m.target}}</div>
-                    </div>
-                    <div v-for="m in dataObj.info.specials.active.group">
-                       <div v-if="m.atk"><span v-if="m.atk>0">+</span>{{m.atk}} ATK vs {{m.target}}</div>
                     </div>
                   </div>
                   <div v-if="dataObj.info.specials.active">
