@@ -248,7 +248,8 @@
     }
     .atkInput {
       display: inline-block;
-      width: 50px;
+      width: 30px;
+      height: 20px;
     }
     .gameSetup, .gamelist {
       padding: 10px;
@@ -259,6 +260,33 @@
     .small {
       font-size: xx-small;
     }
+    .downPoint {
+      width: 20px;
+      height: 20px;
+      display: inline-block;
+      background: url('./imgs/downArrow.png');
+      background-size: 100% 100%;
+      vertical-align: middle;
+    }
+    .upPoint {
+      width: 20px;
+      height: 20px;
+      display: inline-block;
+      background: url('./imgs/upArrow.png');
+      background-size: 100% 100%;
+      vertical-align: middle;
+    }
+    .tn {
+      display: inline-block;
+      width: calc(100% - 100px);
+    }
+    .red {
+      color:red;
+    }
+    .green {
+      color:green;
+    }
+
 
    </style>
    <script>
@@ -332,16 +360,14 @@
                           '<div class="attack">'+
                             '{{all.attack.message}}'+
                             '<div v-for="(player, index) in all.players" v-if="player.id==all.attack.from">'+
-                              '<div>Attacker {{player.name}}</div>'+
-                              '<div>Attack points {{all.attack.amount-all.attack.amounttemp-all.attack.amounttempdefenders}}</div>'+
+                              '<div>Attacker {{player.name}} <span :class="{red : (all.attack.amount-all.attack.amounttemp-all.attack.amounttempdefenders)>0, green : (all.attack.amount-all.attack.amounttemp-all.attack.amounttempdefenders)<=0}">{{all.attack.amount-all.attack.amounttemp-all.attack.amounttempdefenders}}</span></div>'+
                               '<div v-for="descr in all.attack.descr" class="small">{{descr}}</div>'+
                             '</div>'+
                             '<div v-for="(player, index) in all.players" v-if="player.id==all.attack.to">'+
-                              '<div>Defender {{player.name}}</div>'+
-                              '<div v-for="c in player.tablecards" v-if="c.hp>0">'+
-                                 '{{c.name}} <span v-if="sid!=all.attack.to">{{c.hp}}</span><input v-if="sid==all.attack.to" type="number" class="atkInput" :max="c.hp" :min="0" @change="handleChangeDef(all,c,$event)" :value="c.hp-(c.amounttemp || 0)"></input>'+
+                              '<div><div class="tn">Defender {{player.name}}</div><span v-if="sid!=all.attack.to">{{player.hp}}</span><input v-if="sid==all.attack.to" type="number" class="atkInput" id="lifes" :max="player.hp" :min="0" @change="handleChange(all.attack,player,$event)" :value="player.hp-all.attack.amounttemp"></input><div v-if="sid==all.attack.to" class="downPoint" @click="downPoint(all.attack,player)"></div><div v-if="sid==all.attack.to" class="upPoint" @click="upPoint(all.attack,player)"></div></div>'+
+                               '<div v-for="c in player.tablecards" v-if="c.hp>0">'+
+                                 '<div class="ellipsis tn">{{c.name}}</div><span v-if="sid!=all.attack.to">{{c.hp}}</span><input v-if="sid==all.attack.to" type="number" class="atkInput" :max="c.hp" :min="0" @change="handleChangeDef(all,c,$event)" :value="c.hp-(c.amounttemp || 0)"></input><div v-if="sid==all.attack.to" class="downPoint" @click="downPointDef(all,c,$event)"></div><div v-if="sid==all.attack.to" class="upPoint" @click="upPointDef(all,c,$event)"></div>'+
                                 '</div>'+
-                              '<div><label for="lifes">Life </label><span v-if="sid!=all.attack.to">{{player.hp}}</span><input v-if="sid==all.attack.to" type="number" class="atkInput" id="lifes" :max="player.hp" :min="0" @change="handleChange(all.attack,player,$event)" :value="player.hp-all.attack.amounttemp"></input></div>'+
                                 
                             '</div>'+
                             '<div v-if="sid==all.attack.to" class="button" @click="handleAttack(all)">OK</div>'+
@@ -384,7 +410,76 @@
                     a.amounttemp = 12*/
                     //player.hp = event.target.value
                     //event.preventDefault()
+                  },
+                  downPoint:function(a,player){
+                    if((player.hp-a.amounttemp+1)>0)
+                      if((a.amount-a.amounttemp-a.amounttempdefenders)>0)
+                        a.amounttemp++
+                  },
+                  upPoint:function(a,player){
+                      var m = (a.amount-a.amounttemp+1-a.amounttempdefenders)
+                      if(m<=a.amount)
+                        if((player.hp-a.amounttemp+1)<=player.hp)
+                          a.amounttemp--
+                  },
+                  upPointDef:function(a,card,event){
+
+                    console.log('uno '+(a.attack.amount-a.attack.amounttemp+1-a.attack.amounttempdefenders))
+                    console.log('due '+(card.hp-(card.amounttemp || 0)+1))
+
+                    if((a.attack.amount-a.attack.amounttemp+1-a.attack.amounttempdefenders)>a.amount)
+                      return false;
+
+                    if((card.hp-(card.amounttemp || 0)+1)>card.hp)
+                      return false;
+
+
+                    if(!card.amounttemp) {
+                      card.amounttemp = -1
+                    } else {
+                      card.amounttemp--
+                    }
+                    var totto = 0;
+                    for (var i = a.players.length - 1; i >= 0; i--) {
+                      if(a.players[i].id==a.attack.to) {
+                        for (var  m= 0; m < a.players[i].tablecards.length; m++) {
+                          totto+=(a.players[i].tablecards[m].amounttemp || 0)
+                        }
+                      }
+                    }
+                    a.attack.amounttempdefenders = totto
+                  },
+                  downPointDef:function(a,card,event){
+
+                    /*console.log('metto '+)
+                    if((a.attack.amount-a.attack.amounttemp-a.attack.amounttempdefenders)<=0)
+                      return false;*/
+
+                    console.log('uno '+(a.attack.amount-a.attack.amounttemp-1-a.attack.amounttempdefenders))
+                    console.log('due '+(card.hp-(card.amounttemp || 0)-1))
+
+                    if((a.attack.amount-a.attack.amounttemp-1-a.attack.amounttempdefenders)<0)
+                      return false
+
+                    if((card.hp-(card.amounttemp || 0)-1)<0)
+                      return false;
+
+                    if(!card.amounttemp) {
+                      card.amounttemp = 1
+                    } else {
+                      card.amounttemp++
+                    }
+                    var totto = 0;
+                    for (var i = a.players.length - 1; i >= 0; i--) {
+                      if(a.players[i].id==a.attack.to) {
+                        for (var  m= 0; m < a.players[i].tablecards.length; m++) {
+                          totto+=(a.players[i].tablecards[m].amounttemp || 0)
+                        }
+                      }
+                    }
+                    a.attack.amounttempdefenders = totto
                   }
+
                   
                 }
             })
@@ -403,7 +498,7 @@
                               '<div v-if="index==all.turn">Moves {{item.moves}}</div>'+
                               '<div class="button" style="width:initial;" v-if="index==all.turn && item.id==sid"  @click="endTurn">END TURN</div>'+
                               '<div class="button" style="width:initial;" v-if="all.players[all.turn].id == sid && item.id!=sid"  @click="attack(item,all)">ATTACK</div>'+
-                              //'<div class="button" style="width:initial;"  @click="attack(item,all)">ATTACK</div>'+
+                              //'<div class="button" style="width:initial;"  @click="attack(item,all)">ATTACK2</div>'+
                               '<div class="tableCards">'+
                                 '<div class="card"   :style="{\'font-size\': (item.cardDim/7)+\'px\', \'width\': (item.cardDim)+\'px\', \'height\': (item.cardDim*1.6)+\'px\'}" v-if="!card.dead" v-for="card in item.tablecards">'+
                                   '<div @click="actionTable(card,item.cards,sid,item.id)">'+

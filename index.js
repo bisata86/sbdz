@@ -133,7 +133,7 @@ var cards = [
   {
     name:'Il cian di demonte',
     hp: 1,
-    atk: 0,
+    atk: 1,
     src:'/imgs/ilciandidemonte.png',
     type:['normal'],
     descr:"Ce l'ha con tutti e con nessuno",
@@ -199,7 +199,7 @@ var cards = [
   {
     name:'La fecciona putrefatta',
     hp: 9,
-    atk: 0,
+    atk: 1,
     src:'/imgs/lafeccionaputrefatta.png',
     descr:"con le sue misere forze si spara fuori e va contro ai tuoi problemi parandoti il culo",
     type:['smelly'],
@@ -217,7 +217,7 @@ var cards = [
   {
     name:'Capo del K.K.K',
     hp: 9,
-    atk: 0,
+    atk: 1,
     src:'/imgs/capodelkkk.png',
     descr:"Odia i negri",
     type:['norm'],
@@ -454,7 +454,7 @@ var cards = [
   },
   {name:'Merda e liquame',
     hp: 1,
-    atk: 0,
+    atk: 1,
     src:'/imgs/merdaeliquame.png',
     specials: {
       with: [
