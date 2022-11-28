@@ -64,7 +64,7 @@
       height: 87px;
       background: white;
       display: inline-block;
-      font-size: small;
+      nofont-size: small;
       vertical-align: bottom;
       overflow: hidden;
       border: 1px solid black;
@@ -222,13 +222,28 @@
       left: 0;
       margin: auto;
     }
+    @media (orientation: landscape) {
+      .info {
+        height: 90vh;
+        width: 56.25vh;
+        font-size: 4vh;
+      }
+    }
+
+    @media (orientation: portrait) {
+      .info {
+        height: 100vw;
+        width: 62.5vw;
+        font-size: 4vw;
+      }
+
+    }
     .info {
-      max-width: 200px;
       padding: 5px;
     }
     .info .card {
-      width: 200px;
-      height: 300px;
+      width: 100%;
+      height: calc(100% - 0px);
       margin:0;
     }
     .attack {
@@ -286,7 +301,16 @@
     .green {
       color:green;
     }
-
+    .closeInfo {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: url('./imgs/close.png');
+      background-size: 100% 100%;
+      top:-10px;
+      right:-10px;
+      border-radius: 100%;
+    }
 
    </style>
    <script>
@@ -799,9 +823,7 @@
                   
                 </div>
               </div>
-              <div class="button" @click="closeInfo">
-                CLOSE
-              </div>
+              <div class="closeInfo" @click="closeInfo"></div>
               
               
            </div>
