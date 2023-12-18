@@ -574,7 +574,7 @@ var cards = [
     name:'Madracula',
     hp: 3,
     atk: 3,
-    src:'/imgs/edward.jpg',
+    src:'/imgs/madracula.png',
     descr: '',
     type:[],
     specials: {
